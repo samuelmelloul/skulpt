@@ -1,6 +1,6 @@
-<title>Souffle &amp; Socle</title>
+<title>Skulpt</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="theme-color" content="#953063">
+<meta name="theme-color" content="#D23C72">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap">
@@ -815,12 +815,12 @@ function toast(t){const d=document.createElement("div");d.className="toast";d.te
 
 /* ---------- sauvegarde ---------- */
 function exportData(){
-  try{const blob=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="souffle-socle-"+today()+".json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast("Sauvegarde enregistrée dans Téléchargements")}
+  try{const blob=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="skulpt-sauvegarde-"+today()+".json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast("Sauvegarde enregistrée dans Téléchargements")}
   catch(e){toast("La sauvegarde n’a pas pu être créée sur cet appareil")}
 }
 function importData(file){
   const r=new FileReader();
-  r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||!Array.isArray(o.sessions))throw 0;S=migrate(o);save();render();toast("Sauvegarde restaurée")}catch(e){toast("Ce fichier n’est pas une sauvegarde Souffle & Socle")}};
+  r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||!Array.isArray(o.sessions))throw 0;S=migrate(o);save();render();toast("Sauvegarde restaurée")}catch(e){toast("Ce fichier n’est pas une sauvegarde Skulpt")}};
   r.readAsText(file);
 }
 

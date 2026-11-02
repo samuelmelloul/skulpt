@@ -1,4 +1,4 @@
-# Souffle & Socle
+# Skulpt
 
 Application web installable (Android) : renforcement du périnée selon la méthode de Gasquet, cardio sans impact, menus. Les données restent sur le téléphone.
 

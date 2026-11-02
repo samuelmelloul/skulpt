@@ -9,11 +9,11 @@ V=$(date +%Y%m%d%H%M)
   printf '\n</body></html>\n'
 } > docs/index.html
 cat > docs/manifest.webmanifest <<M
-{"name":"Souffle & Socle","short_name":"Souffle & Socle","description":"Périnée, renforcement et cardio doux, méthode de Gasquet","lang":"fr","start_url":"./","scope":"./","display":"standalone","orientation":"portrait","background_color":"#F6F1F4","theme_color":"#953063",
+{"name":"Skulpt","short_name":"Skulpt","description":"Périnée, renforcement et cardio doux, méthode de Gasquet","lang":"fr","start_url":"./","scope":"./","display":"standalone","orientation":"portrait","background_color":"#F6F1F4","theme_color":"#D23C72",
 "icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},{"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}
 M
 cat > docs/sw.js <<W
-const C="souffle-$V";
+const C="skulpt-$V";
 const SHELL=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(SHELL)));self.skipWaiting()});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))));self.clients.claim()});
