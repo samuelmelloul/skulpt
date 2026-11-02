@@ -1,0 +1,870 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Souffle &amp; Socle</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#953063">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: une colonne mobile, 5 onglets en bas, lecteur plein écran : silhouette animée + minuteur + colonne « périnée → nombril » */
+:root{
+  --bg:#F6F1F4; --surface:#FFFFFF; --sunk:#EFE6EC; --ink:#2A1E2B; --muted:#6F6170; --line:#E3D7DF;
+  --accent:#953063; --accent-ink:#FFFFFF; --accent-soft:#F4DDE8;
+  --breath:#2F7A6B; --breath-soft:#D9EEE8;
+  --cardio:#C2571A; --cardio-soft:#FBE4D5;
+  --warn:#A35A12; --warn-soft:#FBEBD8; --ok:#2F7A4B;
+  --f-display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body:"Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#161116; --surface:#211921; --sunk:#2A202A; --ink:#F2E9F0; --muted:#AE9DAB; --line:#3A2D38;
+  --accent:#E585B6; --accent-ink:#2A0F1E; --accent-soft:#3E2032;
+  --breath:#7FCBB7; --breath-soft:#1D3530; --cardio:#F19A5E; --cardio-soft:#3A2414;
+  --warn:#F0B26B; --warn-soft:#3A2913; --ok:#86D0A0; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#161116; --surface:#211921; --sunk:#2A202A; --ink:#F2E9F0; --muted:#AE9DAB; --line:#3A2D38;
+  --accent:#E585B6; --accent-ink:#2A0F1E; --accent-soft:#3E2032;
+  --breath:#7FCBB7; --breath-soft:#1D3530; --cardio:#F19A5E; --cardio-soft:#3A2414;
+  --warn:#F0B26B; --warn-soft:#3A2913; --ok:#86D0A0; color-scheme:dark }
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:1.75rem;letter-spacing:-.01em} h2{font-size:1.3rem} h3{font-size:1.05rem}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 110px;display:grid;gap:18px}
+.eyebrow{font-size:.75rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.small{font-size:.875rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:10px;min-width:0}
+.btn{border:0;border-radius:999px;padding:14px 22px;font-weight:600;background:var(--accent);color:var(--accent-ink);font-size:1rem}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.soft{background:var(--accent-soft);color:var(--ink)}
+.btn.sm{padding:8px 14px;font-size:.9rem}
+.btn.block{width:100%}
+.btn:disabled{opacity:.45}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spread{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.pill{display:inline-block;font-size:.75rem;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--sunk);color:var(--muted)}
+.pill.on{background:var(--breath-soft);color:var(--breath)}
+.pill.acc{background:var(--accent-soft);color:var(--accent)}
+.pill.car{background:var(--cardio-soft);color:var(--cardio)}
+.notice{background:var(--warn-soft);color:var(--ink);border-radius:var(--r);padding:12px 14px;font-size:.9rem;display:grid;gap:6px}
+.notice b{color:var(--warn)}
+ul.clean,ol.clean{margin:0;padding-left:1.1em;display:grid;gap:4px}
+.num{font-variant-numeric:tabular-nums}
+.top{display:grid;gap:4px}
+.ladder{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:6px}
+.ladder span{height:8px;border-radius:4px;background:var(--sunk)}
+.ladder span.done{background:var(--breath)}
+.ladder span.cur{background:var(--accent)}
+.hero{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;display:grid;gap:14px}
+.hero .meta{display:flex;gap:8px;flex-wrap:wrap}
+.exlist{display:grid;margin:0;padding:0;list-style:none}
+.exlist li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:.95rem}
+.exlist li:first-child{border-top:0}
+.exlist li span:last-child{color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.exlist li.c span:first-child::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--cardio);margin-right:8px;vertical-align:middle}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
+.week div{display:grid;gap:4px;justify-items:center;font-size:.75rem;color:var(--muted)}
+.week i{width:28px;height:28px;border-radius:50%;background:var(--sunk);display:grid;place-items:center;font-style:normal;font-size:.8rem;color:var(--muted)}
+.week i.done{background:var(--breath);color:var(--surface)}
+.week i.today{outline:2px solid var(--accent);outline-offset:1px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);z-index:5}
+nav.tabs button{background:none;border:0;padding:10px 2px 12px;display:grid;justify-items:center;gap:3px;font-size:.7rem;color:var(--muted);font-weight:600}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button[aria-current="page"]{color:var(--accent)}
+details.phase{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+details.phase summary{list-style:none;padding:14px 16px;display:grid;gap:4px;cursor:pointer}
+details.phase summary::-webkit-details-marker{display:none}
+details.phase .body{padding:0 16px 16px;display:grid;gap:12px}
+.lib{display:grid;gap:8px}
+.lib button{all:unset;cursor:pointer;display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;background:var(--sunk);font-size:.95rem}
+.lib button:focus-visible{outline:3px solid var(--accent)}
+.sheet{position:fixed;inset:0;background:rgba(20,10,18,.45);display:grid;align-items:end;z-index:20}
+.sheet .panel{background:var(--surface);border-radius:20px 20px 0 0;max-height:90vh;overflow:auto;padding:20px max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:grid;gap:12px;max-width:600px;width:100%;margin:0 auto;box-sizing:border-box}
+.fig{width:100%;max-width:420px;margin:0 auto;aspect-ratio:160/124;background:var(--sunk);border-radius:16px;overflow:hidden}
+.fig svg{display:block;width:100%;height:100%}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:grid;gap:2px;min-width:0}
+.stat b{font-family:var(--f-display);font-size:1.4rem;font-variant-numeric:tabular-nums}
+.stat span{font-size:.75rem;color:var(--muted)}
+.chart{width:100%;height:auto;display:block}
+.hist{list-style:none;margin:0;padding:0;display:grid}
+.hist li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:.9rem}
+.hist li:first-child{border-top:0}
+input[type=number],select{font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+input[type=number]{width:6.5em}
+.form{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.form label{font-size:.95rem}
+.prose{display:grid;gap:10px}
+.rule{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start}
+.rule .k{font-family:var(--f-display);font-weight:700;color:var(--accent);font-size:1.1rem;line-height:1.3}
+.meal{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:10px 0;border-top:1px solid var(--line)}
+.meal:first-of-type{border-top:0}
+.meal .t{font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.meal .k{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums;grid-row:1;grid-column:2}
+.meal p{grid-column:1 / -1}
+.daynav{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;text-align:center}
+.refs{font-size:.85rem;display:grid;gap:6px;padding-left:1.1em;margin:0}
+/* lecteur */
+.player{position:fixed;inset:0;background:var(--bg);z-index:30;display:grid;grid-template-rows:auto 1fr auto;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.player .head,.player .ctl{padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
+.player .head{display:grid;gap:8px}
+.prog{height:4px;background:var(--sunk);border-radius:2px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);width:0}
+.stage{display:grid;place-items:center;padding:4px max(16px,env(safe-area-inset-right,0px)) 4px max(16px,env(safe-area-inset-left,0px));overflow:auto}
+.stage-in{width:100%;max-width:520px;display:grid;gap:12px;justify-items:center;text-align:center}
+.stage .fig{max-height:34vh;width:auto;max-width:100%}
+.cue{font-family:var(--f-display);font-size:clamp(1.35rem,6vw,2rem);font-weight:700;line-height:1.15;text-wrap:balance;min-height:2.3em;display:grid;place-items:center}
+.viz{display:flex;gap:18px;align-items:center;justify-content:center}
+.col{position:relative;width:34px;height:116px;border-radius:17px;background:var(--sunk);overflow:hidden}
+.col i{position:absolute;left:0;right:0;bottom:0;height:0;background:var(--breath);border-radius:17px}
+.col-labels{height:116px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;font-size:.7rem;color:var(--muted);padding-block:4px}
+.ring{position:relative;width:116px;height:116px}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .t{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-display);font-size:2.3rem;font-weight:700;font-variant-numeric:tabular-nums}
+.reps{font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.intro{text-align:left;width:100%;display:grid;gap:10px}
+.ctl{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
+.ctl .iconbtn{background:var(--surface);border:1px solid var(--line);border-radius:999px;width:50px;height:50px;display:grid;place-items:center}
+.ctl .iconbtn svg{width:22px;height:22px}
+.ctl .main{width:68px;height:68px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center}
+.ctl .main svg{width:28px;height:28px}
+.choice{display:grid;gap:8px}
+.choice button{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;text-align:left;font-size:1rem}
+.choice button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.9rem;z-index:40;max-width:90vw;text-align:center}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
+</style>
+
+<div id="app"></div>
+<div id="layer"></div>
+<nav class="tabs" id="tabs" aria-label="Navigation">
+  <button data-tab="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>Séance</button>
+  <button data-tab="program"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20h4V14H4zM10 20h4V9h-4zM16 20h4V4h-4z"/></svg>Programme</button>
+  <button data-tab="food"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 3v8a2 2 0 002 2v8M5 3v5M9 3v5"/><path d="M17 21V3c-2 1-3 4-3 8h3"/></svg>Repas</button>
+  <button data-tab="track"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 17l5-5 4 3 8-8"/><path d="M14 7h6v6"/></svg>Suivi</button>
+  <button data-tab="method"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21V5"/><path d="M8 9c0-3 2-5 4-6 2 1 4 3 4 6"/><path d="M5 21c2-4 4-6 7-6s5 2 7 6"/></svg>Méthode</button>
+</nav>
+
+<script>
+// DATA START
+const IN="Inspirez, sans forcer", EX="Expirez : périnée, puis nombril", REC="Récupérez en marchant doucement";
+const EXOS={
+  install:{n:"Installation, bassin surélevé",pos:"Allongée sur le dos, un coussin ferme sous les fesses (pas sous le dos), genoux fléchis.",why:"Le bassin plus haut que le ventre : les organes remontent d’eux‑mêmes. C’est la position de départ idéale en cas de descente d’organes.",how:["Glissez le coussin sous le bassin.","Rentrez légèrement le menton pour allonger la nuque.","Laissez le ventre se relâcher complètement."],avoid:["Cambrer le bas du dos","Bloquer la respiration"],cycle:[["in",4,"Inspirez par le nez, laissez venir l’air"],["ex",6,"Soufflez lentement, tout se relâche"]]},
+  paille:{n:"Souffle dans la paille",pos:"Bassin surélevé, comme pour l’installation.",why:"Une expiration longue, lèvres presque fermées, fait remonter le diaphragme et réveille le transverse sans pousser vers le bas.",how:["Inspirez par le nez sans gonfler le ventre de force.","Soufflez par la bouche comme dans une paille, régulièrement, jusqu’au bout.","En fin de souffle, sentez le bas du ventre rentrer tout seul."],avoid:["Pousser le ventre vers l’avant","Souffler fort et vite"],cycle:[["in",3,IN],["ex",7,"Soufflez dans la paille… jusqu’au bout"]]},
+  perception:{n:"Repérer son périnée",pos:"Bassin surélevé, genoux fléchis, cuisses relâchées.",why:"On ne renforce bien que ce qu’on sent. Le périnée a trois zones : l’anus, le vagin, l’urètre. On apprend à les fermer et à les remonter sans tricher avec les fesses.",how:["Serrez l’anus comme pour retenir un gaz.","Puis le vagin, comme pour le refermer et l’aspirer vers l’intérieur.","Puis l’avant, comme pour retenir l’urine. Remontez le tout vers le haut.","Relâchez entièrement, plus longtemps que la contraction."],avoid:["Serrer les fesses ou les cuisses","Bloquer le souffle","Pousser vers le bas","Faire le « stop‑pipi » aux toilettes"],cycle:[["hold",3,"Serrez… et remontez"],["rest",6,"Relâchez tout"]]},
+  souffle:{n:"Expiration Gasquet",pos:"Bassin surélevé, ou assise selon le niveau.",why:"Le geste central de la méthode : l’expiration commence par le bas. Périnée d’abord, puis bas‑ventre, puis nombril. Le ventre rentre sans jamais pousser vers le bas.",how:["Inspirez sans forcer.","Au début du souffle : fermez et remontez le périnée.","Continuez de souffler : le bas‑ventre rentre, puis le nombril va vers la colonne.","Relâchez tout à l’inspiration suivante."],avoid:["Rentrer le ventre en inspirant","Contracter d’abord le nombril (ça pousse vers le bas)","Apnée"],cycle:[["in",3,IN],["ex",7,EX]]},
+  bascule:{n:"Bascule du bassin",pos:"Allongée, genoux fléchis, pieds à plat, bras le long du corps.",why:"Mobilise le bas du dos et coordonne le souffle avec le mouvement, sans hyperpression.",how:["Inspirez : le bas du dos garde son petit creux naturel.","Expirez : périnée, puis enroulez le bassin, le bas du dos se pose au sol, les fesses décollent à peine.","Revenez en inspirant."],avoid:["Pousser avec les pieds pour monter haut","Bloquer"],cycle:[["in",3,"Inspirez, bassin neutre"],["ex",5,"Expirez : périnée, enroulez le bassin"]]},
+  genoux:{n:"Genoux vers la poitrine",pos:"Allongée, mains sur les genoux.",why:"Détend le bas du dos et le périnée entre deux exercices.",how:["Amenez les genoux vers la poitrine avec les mains.","Faites de petits cercles, respirez librement.","Reposez les pieds un par un."],avoid:["Lever les deux jambes tendues"],cycle:[["free",45,"Petits cercles, respirez librement"]]},
+  relax:{n:"Relaxation jambes surélevées",pos:"Allongée, mollets sur une chaise, bassin sur coussin.",why:"On termine organes « remontés », périnée relâché. Le relâchement fait partie du travail.",how:["Fermez les yeux.","Laissez l’expiration s’allonger d’elle‑même.","Pour vous relever, roulez sur le côté et poussez avec les bras."],avoid:["Se relever d’un coup en relevant le buste"],cycle:[["in",4,"Inspirez doucement"],["ex",7,"Expirez, relâchez tout"]]},
+  lentes:{n:"Contractions lentes (endurance)",pos:"Selon le niveau : allongée, à quatre pattes, assise ou debout.",why:"Les fibres lentes tiennent les organes toute la journée. On travaille la tenue, toujours en respirant.",how:["Serrez et remontez le périnée, puis tenez.","Pendant la tenue, continuez à respirer en petites expirations.","Relâchez complètement, au moins aussi longtemps que la tenue."],avoid:["Retenir son souffle pendant la tenue","Serrer les fesses","Faiblir à la fin : arrêtez la tenue avant"],cycle:[["hold",5,"Serrez, remontez, tenez en respirant"],["rest",10,"Relâchez complètement"]]},
+  rapides:{n:"Contractions rapides (réflexe)",pos:"Selon le niveau.",why:"Les fibres rapides ferment le périnée d’un coup lors d’une toux, d’un rire, d’un effort brusque.",how:["Serrez fort et vite, puis lâchez aussitôt.","Gardez un souffle tranquille.","Si la qualité baisse, faites une pause."],avoid:["Pousser en relâchant","Contracter les abdos en même temps"],cycle:[["hold",1,"Serrez !"],["rest",2,"Lâchez"]]},
+  clam:{n:"Coquillage sur le côté",pos:"Allongée sur le côté, genoux fléchis, tête posée sur le bras.",why:"Réveille les fessiers profonds, partenaires du périnée, sans aucune pression vers le bas.",how:["Inspirez, genoux joints.","Expirez : périnée, puis ouvrez le genou du dessus, pieds collés.","Refermez en inspirant."],avoid:["Basculer le bassin en arrière","Bloquer le souffle"],cycle:[["in",2,"Inspirez, genoux joints"],["ex",4,"Expirez : périnée, ouvrez le genou"]],sides:true},
+  qp:{n:"Quatre pattes : expiration",pos:"À quatre pattes, mains sous les épaules, genoux sous les hanches, dos long, nuque dans l’alignement.",why:"À quatre pattes, les organes pendent vers l’avant et non vers le bas : le transverse travaille dans la bonne direction.",how:["Inspirez : laissez le ventre descendre sans creuser le dos.","Expirez : périnée, puis remontez le ventre vers le dos.","Le dos reste plat, il ne s’arrondit pas."],avoid:["Creuser les lombaires","Rentrer le ventre en inspirant"],cycle:[["in",3,"Inspirez, le ventre se relâche"],["ex",6,"Expirez : périnée, le ventre remonte"]]},
+  chat:{n:"Le chat, version souffle",pos:"À quatre pattes.",why:"Mobilise toute la colonne en associant l’enroulement à l’expiration.",how:["Expirez : périnée, puis enroulez le dos de bas en haut, la tête descend en dernier.","Inspirez : revenez au dos plat, sans cambrer.","Grandissez‑vous : tête et coccyx s’éloignent."],avoid:["Cambrer fort au retour","Aller vite"],cycle:[["ex",5,"Expirez : périnée, enroulez le dos"],["in",3,"Inspirez, revenez dos plat"]]},
+  coudes:{n:"Coudes‑genoux",pos:"Genoux au sol, avant‑bras posés, fesses plus hautes que la tête.",why:"Posture « anti‑pesanteur » : les organes remontent vers le diaphragme. Très utile en cas de descente d’organes.",how:["Placez‑vous, front sur les mains si besoin.","Inspirez sans forcer.","Expirez : périnée, puis ventre vers le dos. Sentez tout remonter."],avoid:["Rester si la tête tourne"],cycle:[["in",3,IN],["ex",7,"Expirez : tout remonte vers la poitrine"]]},
+  enfant:{n:"Posture de l’enfant",pos:"À genoux, fesses vers les talons, front au sol ou sur un coussin, bras en avant.",why:"Étire le dos et relâche le périnée en fin de séance.",how:["Écartez un peu les genoux si besoin.","Respirez dans le dos.","Laissez le périnée se relâcher."],avoid:["Forcer sur les genoux"],cycle:[["free",60,"Respirez dans le dos, relâchez"]]},
+  assise:{n:"Assise sur les ischions",pos:"Assise au bord d’une chaise, pieds à plat, genoux un peu plus bas que les hanches.",why:"Être bien posée sur les deux os des fesses (ischions) place le bassin : le périnée peut travailler et le dos se tient seul.",how:["Balancez le bassin pour sentir les deux ischions, puis posez‑vous dessus.","Inspirez sans forcer.","Expirez : périnée, nombril, et poussez le sommet du crâne vers le plafond."],avoid:["S’avachir sur le sacrum","Cambrer pour « se tenir droite »"],cycle:[["in",3,IN],["ex",6,"Expirez : périnée, nombril, grandissez‑vous"]]},
+  bras:{n:"Grandissement bras levés",pos:"Assise sur les ischions.",why:"L’auto‑grandissement sur l’expiration : la colonne s’étire, le ventre s’affine, les organes remontent.",how:["Mains au‑dessus de la tête, paumes vers le plafond.","Expirez : périnée, nombril, et poussez les paumes vers le plafond.","Inspirez en relâchant un peu."],avoid:["Hausser les épaules","Cambrer"],cycle:[["in",3,"Inspirez, coudes souples"],["ex",6,"Expirez : poussez le plafond, grandissez"]]},
+  torsion:{n:"Torsion assise",pos:"Assise sur les ischions, main opposée sur le genou.",why:"Les obliques affinent la taille ; la torsion se fait en grandissement, jamais en se tassant.",how:["Inspirez en vous grandissant.","Expirez : périnée, puis tournez le buste, le regard suit.","Revenez au centre en inspirant."],avoid:["S’arrondir","Forcer sur la nuque"],cycle:[["in",3,"Inspirez au centre"],["ex",5,"Expirez : périnée, tournez"]],sides:true},
+  pont:{n:"Pont fessier",pos:"Allongée, genoux fléchis, pieds à largeur de hanches.",why:"Fessiers, arrière des cuisses et périnée ensemble. Le bassin monte, les organes restent hauts.",how:["Inspirez en bas.","Expirez : périnée, puis décollez le bassin en déroulant le dos.","Tenez en haut en respirant doucement.","Redescendez vertèbre par vertèbre."],avoid:["Monter en apnée","Cambrer en haut"],cycle:[["in",3,"Inspirez en bas"],["ex",4,"Expirez : périnée, montez le bassin"],["hold",3,"Tenez, souffle doux"],["rest",3,"Redescendez en déroulant"]]},
+  ours:{n:"Genoux décollés (l’ours)",pos:"À quatre pattes, orteils repliés.",why:"Premier gainage, court, toujours sur l’expiration : le transverse tient, rien ne pousse vers le bas.",how:["Inspirez à quatre pattes.","Expirez : périnée, nombril, puis décollez les genoux de 2 cm.","Reposez les genoux en inspirant."],avoid:["Lever les fesses","Bloquer le souffle"],cycle:[["in",3,"Inspirez, genoux au sol"],["ex",6,"Expirez : périnée, décollez les genoux"]]},
+  oiseau:{n:"Bras‑jambe opposés",pos:"À quatre pattes, dos long.",why:"Stabilité du bassin et du dos, avec un dos qui reste long.",how:["Inspirez.","Expirez : périnée, puis tendez un bras et la jambe opposée, à l’horizontale.","Revenez en inspirant."],avoid:["Lever la jambe trop haut (cambrure)","Tourner le bassin"],cycle:[["in",3,"Inspirez"],["ex",5,"Expirez : périnée, bras et jambe opposés"]],sides:true},
+  debout:{n:"Posture debout",pos:"Debout, pieds à largeur de hanches, genoux souples.",why:"La posture du quotidien : poids réparti, bassin neutre, tête qui monte. C’est elle qui protège le périnée toute la journée.",how:["Répartissez le poids entre talons et avant des pieds.","Inspirez sans forcer.","Expirez : périnée, nombril, sommet du crâne vers le ciel."],avoid:["Verrouiller les genoux","Bomber le ventre"],cycle:[["in",3,IN],["ex",6,"Expirez : périnée, nombril, grandissez"]]},
+  toux:{n:"Verrouillage avant la toux",pos:"Debout.",why:"Le réflexe le plus utile au quotidien : fermer le périnée avant une toux, un éternuement, un rire, un port de charge.",how:["Serrez et remontez le périnée.","Toussez (ou faites « Ha ! ») en gardant le verrouillage.","Relâchez."],avoid:["Tousser d’abord, serrer ensuite","Se plier en deux en toussant"],cycle:[["hold",2,"Verrouillez le périnée"],["move",1,"Toussez !"],["rest",4,"Relâchez"]]},
+  lever:{n:"Se lever de la chaise",pos:"Assise au bord d’une chaise, pieds un peu en arrière.",why:"Geste répété 50 fois par jour : on apprend à le faire sur l’expiration, périnée verrouillé.",how:["Inspirez assise.","Expirez : périnée, puis penchez‑vous en avant et levez‑vous en poussant dans les talons.","Rasseyez‑vous doucement en inspirant, fesses en arrière."],avoid:["Se lever en apnée","Se laisser tomber sur la chaise"],cycle:[["in",3,"Inspirez assise"],["ex",4,"Expirez : périnée, levez‑vous"],["in",3,"Rasseyez‑vous doucement"]]},
+  squat:{n:"Squat vers la chaise",pos:"Debout devant une chaise, pieds largeur de hanches.",why:"Le plus efficace pour les cuisses et les fessiers, donc pour dépenser. Le souffle protège le périnée à la remontée.",how:["Inspirez en descendant, fesses vers l’arrière, jusqu’à frôler la chaise.","Expirez : périnée d’abord, puis remontez en poussant dans les talons.","Le dos reste long, le regard devant."],avoid:["Remonter en apnée","Genoux qui rentrent vers l’intérieur"],cycle:[["in",3,"Inspirez, descendez"],["ex",3,"Expirez : périnée, remontez"]]},
+  fente:{n:"Fente statique",pos:"Un pied devant, l’autre derrière sur la pointe, main sur une chaise si besoin.",why:"Renforce chaque jambe séparément, améliore l’équilibre.",how:["Inspirez en descendant le genou arrière vers le sol.","Expirez : périnée, remontez.","Le buste reste droit, grandi."],avoid:["Genou avant qui dépasse loin le pied","Se pencher en avant"],cycle:[["in",3,"Inspirez, descendez"],["ex",3,"Expirez : périnée, remontez"]],sides:true},
+  inclinee:{n:"Planche inclinée",pos:"Mains sur un plan de travail ou une table solide, corps en ligne, pieds en arrière.",why:"Le gainage du tronc à faible charge : plus le support est haut, plus c’est doux.",how:["Placez‑vous, corps droit de la tête aux talons.","Pendant toute la tenue, respirez en expirations actives : périnée, nombril.","Ne bloquez jamais."],avoid:["Ventre qui pend","Fesses en l’air","Apnée"],cycle:[["in",3,"Inspirez, restez gainée"],["ex",6,"Expirez : périnée, nombril, tenez"]]},
+  latdebout:{n:"Étirement latéral",pos:"Debout, un bras au‑dessus de la tête.",why:"Ouvre les côtes, libère la respiration, termine la séance en douceur.",how:["Grandissez‑vous d’abord.","Expirez en penchant doucement sur le côté, le bras passe au‑dessus.","Respirez dans les côtes étirées."],avoid:["S’affaisser sur le côté"],cycle:[["free",20,"Étirez‑vous, respirez dans les côtes"]],sides:true},
+  planche:{n:"Planche sur les genoux",pos:"Sur les avant‑bras et les genoux, corps en ligne des épaules aux genoux.",why:"Gainage complet, toujours sous contrôle du souffle. Si vous sentez une pesanteur, revenez à la planche inclinée.",how:["Placez‑vous, coudes sous les épaules.","Tenez en faisant de petites expirations actives : périnée, nombril.","Reposez‑vous à quatre pattes pendant la récupération."],avoid:["Apnée","Ventre qui pousse vers le sol","Continuer en cas de pesanteur"],cycle:[["hold",20,"Tenez : petites expirations, périnée"],["rest",15,"Reposez‑vous à quatre pattes"]]},
+  pontuni:{n:"Pont sur une jambe",pos:"Allongée, genoux fléchis, une jambe tendue dans l’axe de l’autre cuisse.",why:"Version plus forte du pont : fessier de chaque côté, stabilité du bassin.",how:["Inspirez en bas.","Expirez : périnée, montez le bassin sur une jambe.","Redescendez en inspirant, sans que le bassin penche."],avoid:["Bassin qui tourne","Apnée"],cycle:[["in",3,"Inspirez en bas"],["ex",4,"Expirez : périnée, montez"]],sides:true},
+  charge:{n:"Squat avec charge",pos:"Debout, une bouteille d’eau (1,5 L) contre la poitrine.",why:"La charge augmente la dépense et prépare au portage d’enfants et de courses.",how:["Inspirez en descendant.","Expirez : périnée d’abord, puis remontez.","Gardez la charge collée au corps."],avoid:["Charge trop lourde (si ça pousse vers le bas, allégez)","Apnée"],cycle:[["in",3,"Inspirez, descendez"],["ex",3,"Expirez : périnée, remontez"]]},
+  souleve:{n:"Soulever du sol",pos:"Un objet au sol (panier, sac, pack d’eau léger) devant les pieds.",why:"Le geste qui fait le plus de dégâts au quotidien, réappris : verrouiller, expirer, se servir des jambes.",how:["Pliez les genoux, dos long, saisissez l’objet.","Expirez : périnée, nombril, puis levez‑vous avec les jambes, objet contre vous.","Reposez en inspirant, toujours en pliant les genoux."],avoid:["Soulever en apnée","Dos rond, jambes tendues"],cycle:[["in",3,"Pliez les genoux, saisissez"],["ex",3,"Expirez : périnée, levez‑vous"]]},
+  laterale:{n:"Gainage latéral sur genoux",pos:"Sur le côté, appui sur l’avant‑bras et le genou du dessous.",why:"Obliques et taille, sans pression vers le bas.",how:["Montez le bassin pour aligner épaule, hanche, genou.","Tenez en petites expirations actives.","Reposez le bassin."],avoid:["Bassin qui tombe","Apnée"],cycle:[["hold",15,"Tenez : petites expirations"],["rest",10,"Reposez"]],sides:true},
+  developpe:{n:"Développé au‑dessus de la tête",pos:"Assise sur les ischions, une bouteille dans chaque main à hauteur d’épaules.",why:"Bras et épaules, en auto‑grandissement : pousser vers le haut fait remonter les organes.",how:["Inspirez, bouteilles aux épaules.","Expirez : périnée, nombril, poussez les bouteilles vers le plafond.","Redescendez en inspirant."],avoid:["Cambrer","Hausser les épaules"],cycle:[["in",2,"Inspirez, bouteilles aux épaules"],["ex",3,"Expirez : poussez vers le haut"]]},
+  step:{n:"Montée de marche",pos:"Devant une marche d’escalier, main sur la rampe si besoin.",why:"Cuisses, fessiers et cardio doux. Le souffle accompagne la montée.",how:["Expirez : périnée, montez en poussant dans le talon du pied posé sur la marche.","Inspirez en redescendant doucement.","Même jambe sur la série, puis changez."],avoid:["Sauter de la marche","Apnée"],cycle:[["ex",3,"Expirez : périnée, montez"],["in",3,"Inspirez, redescendez"]],sides:true},
+  thruster:{n:"Squat + poussée",pos:"Debout, bouteilles aux épaules.",why:"Mouvement complet qui fait monter le cœur : très bon pour la dépense.",how:["Inspirez en descendant en squat.","Expirez : périnée, remontez et poussez les bouteilles vers le plafond dans le même élan.","Redescendez les bras en inspirant."],avoid:["Apnée","Cambrer en haut"],cycle:[["in",3,"Inspirez, descendez"],["ex",4,"Expirez : remontez et poussez"]]},
+  fentearr:{n:"Fente arrière",pos:"Debout, main sur une chaise si besoin.",why:"Fessiers et cuisses, plus doux pour les genoux que la fente avant.",how:["Inspirez en reculant une jambe et en descendant.","Expirez : périnée, revenez debout en poussant dans le pied avant.","Faites toute la série d’un côté, puis l’autre."],avoid:["Buste penché","Apnée"],cycle:[["in",3,"Inspirez, reculez, descendez"],["ex",3,"Expirez : périnée, revenez"]],sides:true},
+  planche2:{n:"Planche (genoux ou pieds)",pos:"Avant‑bras au sol. Sur les pieds seulement si aucune pesanteur ni fuite depuis plusieurs semaines ; sinon sur les genoux.",why:"Gainage complet de fin de programme.",how:["Corps en ligne.","Petites expirations actives pendant toute la tenue.","Revenez sur les genoux au moindre doute."],avoid:["Apnée","Fesses hautes ou ventre qui tombe"],cycle:[["hold",25,"Tenez : petites expirations, périnée"],["rest",15,"Reposez‑vous à quatre pattes"]]},
+  // cardio sans impact : jamais de saut
+  marche:{c:1,n:"Marche active sur place",pos:"Debout, sur un tapis ou pieds nus.",why:"Échauffement et cardio sans impact : le cœur monte, rien ne tape sur le périnée.",how:["Montez les genoux à hauteur confortable, balancez les bras.","Restez grandie, respirez librement.","Pas de saut."],avoid:["Sauter","Courir sur place"],cycle:[["cardio",40,"Marchez, genoux hauts, bras actifs"],["rest",20,REC]]},
+  boxe:{c:1,n:"Boxe dans le vide",pos:"Debout, un pied devant l’autre, genoux souples, poings devant le menton.",why:"Fait monter le cœur et travaille bras, épaules et taille, sans aucun impact.",how:["Lancez un poing devant vous en expirant, puis l’autre.","Tournez légèrement le buste à chaque coup.","Gardez les pieds au sol."],avoid:["Sautiller","Bloquer le souffle"],cycle:[["cardio",40,"Frappez en expirant, poing après poing"],["rest",20,REC]]},
+  jack:{c:1,n:"Pas latéral bras en V",pos:"Debout, pieds joints.",why:"La version sans saut du jumping jack : même travail du cœur, sans choc.",how:["Écartez un pied sur le côté en levant les bras en V.","Revenez pieds joints, bras le long du corps.","Alternez droite et gauche, à bon rythme."],avoid:["Sauter","Cambrer en levant les bras"],cycle:[["cardio",40,"Pas sur le côté, bras en V"],["rest",20,REC]]},
+  genouxh:{c:1,n:"Montées de genoux rapides",pos:"Debout, mains devant vous à hauteur de taille.",why:"Plus intense que la marche, toujours sans saut : on accélère, on ne décolle pas.",how:["Montez un genou vers la main, reposez, puis l’autre.","Accélérez sans quitter le sol des deux pieds.","Expirez par petites bouffées."],avoid:["Sauter d’un pied sur l’autre","Se pencher en arrière"],cycle:[["cardio",40,"Genoux vers les mains, vite, sans sauter"],["rest",20,REC]]},
+  squatpointe:{c:1,n:"Squat + pointes de pieds",pos:"Debout, pieds largeur de hanches.",why:"Enchaîne les plus gros muscles du corps : forte dépense, sans impact.",how:["Descendez en squat en inspirant.","Expirez : périnée, remontez et montez sur la pointe des pieds.","Redescendez les talons et enchaînez."],avoid:["Apnée","Sauter en haut"],cycle:[["cardio",40,"Squat, puis pointes de pieds"],["rest",20,REC]]},
+  patineur:{c:1,n:"Pas chassé latéral",pos:"Debout, genoux fléchis.",why:"Travaille fessiers et cuisses en déplacement latéral, sans saut.",how:["Faites un grand pas sur le côté en fléchissant le genou.","Ramenez l’autre pied, repartez de l’autre côté.","Restez basse et grandie."],avoid:["Sauter","Laisser le genou rentrer"],cycle:[["cardio",40,"Grand pas de côté, restez basse"],["rest",20,REC]]}
+};
+
+const PHASES=[
+ {key:"Éveil",weeks:"Semaines 1 à 3",min:6,place:"Allongée, bassin surélevé",
+  goal:"Sentir son périnée, découvrir l’expiration Gasquet et travailler organes « remontés ». Un petit échauffement debout lance chaque séance.",
+  daily:["Toussez ou éternuez en tournant la tête sur le côté, après avoir serré le périnée.","Pour vous relever du lit : roulez sur le côté, poussez avec le bras.","Allongez‑vous 10 minutes jambes surélevées en fin de journée si vous sentez une pesanteur."],
+  next:"6 séances faites, sans pesanteur ni fuite pendant les exercices, et vous sentez la contraction remonter.",
+  A:[["marche",3,[40,20]],["jack",2,[30,15]],["install",3],["paille",8],["perception",10],["souffle",10],["lentes",8,[3,6]],["bascule",10],["pont",6],["clam",8],["relax",5]],
+  B:[["marche",3,[40,20]],["boxe",2,[30,15]],["install",3],["perception",8],["souffle",10],["rapides",12],["clam",8],["lentes",8,[3,6]],["pont",8],["genoux",1],["relax",5]]},
+ {key:"Ancrage",weeks:"Semaines 4 à 7",min:8,place:"Quatre pattes et coudes‑genoux",
+  goal:"Tenir les contractions plus longtemps, activer le transverse dans les positions où les organes remontent. Le cardio s’allonge un peu.",
+  daily:["Portez votre enfant sur l’expiration : périnée, puis soulevez.","Aux toilettes, ne poussez jamais : pieds sur un petit tabouret, expirez et laissez venir.","Ne faites jamais le « stop‑pipi » : cela perturbe la vidange de la vessie."],
+  next:"8 séances, tenues de 5 secondes faciles, aucune pesanteur après les séances.",
+  A:[["marche",3,[40,20]],["boxe",3,[30,15]],["qp",10],["chat",10],["lentes",10,[5,10]],["coudes",8],["rapides",15],["clam",10],["pont",10],["enfant",1]],
+  B:[["marche",3,[40,20]],["jack",3,[30,15]],["souffle",6],["qp",10],["clam",10],["lentes",10,[5,10]],["coudes",8],["rapides",15],["pont",10],["bascule",8],["enfant",1]]},
+ {key:"Redressement",weeks:"Semaines 8 à 11",min:8,place:"Assise sur les ischions",
+  goal:"Passer à la verticale : posture assise, auto‑grandissement, premiers gainages et ponts. Trois blocs de cardio en début de séance.",
+  daily:["Au bureau ou à table, asseyez‑vous sur les ischions, pieds à plat.","Expirez périnée‑nombril en vous levant d’une chaise.","Évitez de rentrer le ventre en permanence : grandissez‑vous plutôt."],
+  next:"8 séances, tenues de 8 secondes en position assise sans fatigue.",
+  A:[["marche",3,[40,20]],["boxe",3,[40,20]],["jack",3,[40,20]],["assise",8],["bras",8],["torsion",6],["lentes",10,[8,10]],["pont",12],["ours",8],["oiseau",6],["coudes",6],["enfant",1]],
+  B:[["marche",3,[40,20]],["genouxh",3,[30,15]],["jack",3,[40,20]],["assise",6],["rapides",20],["oiseau",8],["pont",12],["clam",12],["chat",8],["ours",8],["lentes",8,[8,10]],["relax",5]]},
+ {key:"Debout",weeks:"Semaines 12 à 16",min:10,place:"Debout",
+  goal:"Garder le verrouillage debout et dans les gestes du quotidien. Les jambes travaillent vraiment, le cardio devient plus soutenu.",
+  daily:["Verrouillez avant chaque port de charge, chaque toux, chaque rire.","Ajoutez 2 à 3 marches de 30 minutes par semaine, à bon rythme.","Montez les escaliers sur l’expiration."],
+  next:"10 séances, aucun symptôme debout, squat de 12 répétitions sans pesanteur.",
+  A:[["marche",2,[40,20]],["jack",3,[40,20]],["boxe",3,[40,20]],["debout",5],["toux",6],["lever",12],["squat",12],["inclinee",8],["fente",8],["pont",12],["lentes",8,[8,8]],["chat",6],["latdebout",1]],
+  B:[["marche",2,[40,20]],["genouxh",3,[40,20]],["squatpointe",3,[40,20]],["debout",4],["squat",12],["fente",10],["pont",12],["ours",10],["inclinee",8],["rapides",20],["lever",10],["enfant",1]]},
+ {key:"Force",weeks:"Semaines 17 à 22",min:12,place:"Renforcement et cardio",
+  goal:"Renforcer tout le corps avec de petites charges, gainage plus long, cardio en intervalles. Toujours sur l’expiration.",
+  daily:["Soulevez les courses et les enfants jambes fléchies, sur l’expiration.","Gardez vos 2 à 3 marches rapides par semaine.","Une séance ratée n’est pas grave : reprenez à la suivante."],
+  next:"12 séances, planche sur genoux 20 secondes en respirant, aucune pesanteur.",
+  A:[["marche",2,[40,20]],["patineur",4,[40,20]],["boxe",4,[40,20]],["souleve",10],["charge",12],["fente",10],["planche",4],["pontuni",8],["developpe",12],["laterale",3],["latdebout",1]],
+  B:[["marche",2,[40,20]],["jack",4,[40,20]],["squatpointe",4,[40,20]],["chat",6],["charge",15],["pontuni",8],["laterale",3],["oiseau",8],["fentearr",10],["developpe",12],["lentes",6,[10,10]],["enfant",1]]},
+ {key:"Élan",weeks:"Semaine 23 et après",min:14,place:"Dynamique et entretien",
+  goal:"Enchaîner plus vite, faire monter le cœur sans impact, puis entretenir à long terme.",
+  daily:["Le verrouillage est devenu automatique : vérifiez‑le de temps en temps.","Avant de reprendre course, saut ou trampoline, faites un bilan avec la sage‑femme ou le kiné.","Gardez au moins 2 séances par semaine pour entretenir."],
+  next:"Phase d’entretien : continuez en alternant les séances A et B.",
+  A:[["marche",2,[45,15]],["genouxh",4,[45,15]],["patineur",4,[45,15]],["step",10],["thruster",12],["planche2",4],["pontuni",10],["fentearr",10],["charge",15],["boxe",4,[45,15]],["toux",5],["latdebout",1]],
+  B:[["marche",2,[45,15]],["jack",4,[45,15]],["squatpointe",4,[45,15]],["charge",15],["souleve",12],["laterale",4],["oiseau",10],["step",10],["thruster",12],["boxe",3,[45,15]],["rapides",20],["enfant",1]]}
+];
+const INTRO_S=12, SWITCH_S=5;
+function itemSeconds(it){const e=EXOS[it[0]];const c=cycleOf(it);const per=c.reduce((a,s)=>a+s[1],0);return per*it[1]*(e.sides?2:1)+(e.sides?SWITCH_S:0)+INTRO_S}
+function cycleOf(it){const e=EXOS[it[0]];if(!it[2])return e.cycle;let k=0;return e.cycle.map(s=>[s[0],it[2][k++]??s[1],s[2]])}
+function sessionSeconds(list){return list.reduce((a,it)=>a+itemSeconds(it),0)}
+
+/* ---------- silhouettes animées ---------- */
+// Vue de profil, sol à y=100. Une pose = points clés ; genoux et coudes sont calculés (cinématique inverse) sauf s’ils sont donnés.
+const L_T=34,L_TH=24,L_SH=23,L_UA=16,L_FA=15;
+const STAND={H:[80,54],S:[80,20],F1:[83,100],F2:[78,100],P1:[84,53],P2:[78,53]};
+const TALL={...STAND,H:[80,52],S:[80,17]};
+const SQ={H:[64,74],S:[82,42],F1:[84,100],F2:[80,100],P1:[110,46],P2:[107,48],e:-1};
+const SIT={H:[70,74],S:[70,40],F1:[95,100],F2:[91,100],P1:[90,72],P2:[87,73]};
+const SUP={H:[92,92],S:[58,93],F1:[117,100],F2:[120,100],P1:[104,96],P2:[101,97]};
+const SUPC={...SUP,H:[92,87],c:-1.5};
+const BR={...SUP,H:[92,79],S:[60,93],K1:[115,75],F1:[117,100],K2:[118,75],F2:[120,100]};
+const QP={H:[58,74],S:[92,71],K1:[58,98],F1:[35,99],K2:[61,98],F2:[38,99],P1:[93,100],P2:[96,100],ht:15};
+const COU={...QP,S:[90,86],E1:[91,99],P1:[106,99],E2:[93,99],P2:[108,99],ht:10};
+const ENF={H:[44,90],S:[78,92],K1:[66,99],F1:[42,100],K2:[68,99],F2:[44,100],E1:[94,95],P1:[116,98],E2:[96,95],P2:[118,98],ht:10};
+const PLK={H:[62,86],S:[95,82],E1:[95,99],P1:[110,99],E2:[97,99],P2:[112,99],K1:[39,96],F1:[24,84],K2:[41,97],F2:[26,85]};
+const PLF={H:[58,85],S:[92,81],E1:[92,99],P1:[107,99],E2:[94,99],P2:[109,99],F1:[12,98],F2:[14,99]};
+const INC={H:[72,70],S:[101,52],P1:[128,62],P2:[130,62],F1:[33,100],F2:[35,100]};
+const LAT0={H:[84,96],S:[50,95],E1:[34,96],P1:[19,96],K1:[106,98],F1:[112,99],K2:[106,96],F2:[113,96],P2:[78,92]};
+const LAT1={...LAT0,H:[84,84],S:[50,84],E1:[50,99],P1:[66,99],P2:[80,80]};
+const CLAM0={H:[90,95],S:[56,95],E1:[50,99],P1:[42,91],K1:[108,95],F1:[124,99],K2:[108,97],F2:[124,100],P2:[86,92]};
+const MAR0={...STAND,K1:[101,62],F1:[103,84],K2:[79,77],F2:[79,100],P1:[66,46],P2:[96,40]};
+const MAR1={...STAND,K2:[101,62],F2:[103,84],K1:[81,77],F1:[81,100],P1:[96,40],P2:[66,46]};
+const FEN0={H:[80,72],S:[80,38],K1:[101,76],F1:[102,100],K2:[71,95],F2:[52,99],P1:[86,72],P2:[78,72]};
+const ANIM={
+  install:{p:[SUPC,{...SUPC,c:0}],props:["mat","cushion"]},
+  paille:{p:[SUPC,{...SUPC,c:0}],props:["mat","cushion"]},
+  perception:{p:[SUPC,{...SUPC,c:0}],props:["mat","cushion"]},
+  souffle:{p:[SUPC,{...SUPC,c:0}],props:["mat","cushion"]},
+  lentes:{p:[SUPC,{...SUPC,c:0}],props:["mat","cushion"]},
+  rapides:{p:[SUPC,{...SUPC,c:0}],props:["mat","cushion"]},
+  relax:{p:[{H:[92,87],S:[58,93],K1:[104,67],F1:[128,70],K2:[106,68],F2:[130,71],P1:[100,95],P2:[98,96],c:-1.5},{H:[92,87],S:[58,93],K1:[104,67],F1:[128,70],K2:[106,68],F2:[130,71],P1:[100,95],P2:[98,96]}],props:["mat","cushion","chairR"]},
+  bascule:{p:[SUP,{...SUP,H:[92,87]}],props:["mat"]},
+  pont:{p:[SUP,BR],props:["mat"]},
+  pontuni:{p:[{...SUP,K1:[113,79],F1:[134,68]},{...BR,K1:[115,75],F1:[137,66]}],props:["mat"]},
+  genoux:{p:[{...SUP,K1:[98,70],F1:[116,76],K2:[100,71],F2:[118,77],P1:[100,70],P2:[102,71]},{...SUP,K1:[93,68],F1:[110,73],K2:[95,69],F2:[112,74],P1:[95,68],P2:[97,69]}],osc:3,props:["mat"]},
+  clam:{p:[CLAM0,{...CLAM0,K1:[104,77],F1:[124,99]}],props:["mat"]},
+  qp:{p:[QP,{...QP,c:2.5}],props:["mat"]},
+  chat:{p:[QP,{...QP,c:9,ht:50}],props:["mat"]},
+  coudes:{p:[COU,{...COU,c:3}],props:["mat"]},
+  enfant:{p:[ENF,{...ENF,c:2}],osc:5,props:["mat"]},
+  ours:{p:[QP,{...QP,H:[58,70],S:[92,68],K1:[58,93],K2:[61,93],F1:[36,99],F2:[39,99]}],props:["mat"]},
+  oiseau:{p:[QP,{...QP,K1:[34,73],F1:[11,72],P1:[124,62]}],props:["mat"]},
+  planche:{p:[QP,PLK],props:["mat"]},
+  planche2:{p:[QP,PLF],props:["mat"]},
+  laterale:{p:[LAT0,LAT1],props:["mat"]},
+  inclinee:{p:[INC,{...INC,c:1.5}],props:["table"]},
+  assise:{p:[{...SIT,S:[77,42],ht:14},SIT],props:["chairL"]},
+  bras:{p:[{...SIT,P1:[80,12],P2:[78,13],e:-1},{...SIT,S:[70,38],P1:[71,5],P2:[70,5]}],props:["chairL"]},
+  torsion:{p:[SIT,{...SIT,S:[68,40],P1:[56,62],P2:[94,68],ht:-10}],props:["chairL"]},
+  developpe:{p:[{...SIT,P1:[80,40],P2:[78,41],e:1},{...SIT,P1:[71,7],P2:[69,7]}],props:["chairL"],held:"bottle"},
+  debout:{p:[STAND,TALL]},
+  toux:{p:[STAND,TALL,{...STAND,S:[85,22],ht:22}],seq:{hold:1,move:2,rest:0}},
+  lever:{p:[{H:[64,74],S:[66,40],F1:[90,100],F2:[86,100],P1:[86,70],P2:[82,71]},{H:[80,54],S:[82,20],F1:[88,100],F2:[84,100],P1:[84,53],P2:[80,53]}],props:["chairL"]},
+  squat:{p:[SQ,STAND],props:["chairL"]},
+  charge:{p:[{...SQ,P1:[98,50],P2:[96,51],e:1},{...STAND,P1:[90,33],P2:[88,34]}],held:"bottle"},
+  thruster:{p:[{...SQ,P1:[95,44],P2:[93,45],e:1},{...STAND,P1:[82,-10],P2:[80,-10]}],held:"bottle"},
+  souleve:{p:[{H:[64,78],S:[87,52],F1:[84,100],F2:[80,100],P1:[95,93],P2:[93,93]},{...STAND,P1:[90,50],P2:[88,50]}],held:"box"},
+  fente:{p:[FEN0,{H:[80,56],S:[80,22],F1:[100,100],F2:[60,100],P1:[86,56],P2:[78,56]}]},
+  fentearr:{p:[FEN0,STAND]},
+  step:{p:[{H:[80,54],S:[82,20],F1:[106,84],F2:[78,100],P1:[90,50],P2:[72,50]},{H:[104,42],S:[105,8],F1:[107,84],K2:[112,64],F2:[96,78],P1:[96,40],P2:[112,38]}],props:["step"]},
+  latdebout:{p:[{...STAND,front:1,F1:[74,100],F2:[86,100],P1:[70,52],P2:[88,-8]},{...STAND,front:1,S:[70,22],F1:[74,100],F2:[86,100],P1:[74,56],P2:[54,-4]}],osc:6},
+  marche:{p:[MAR0,MAR1],osc:1.3},
+  genouxh:{p:[{...MAR0,K1:[103,57],F1:[106,79],P1:[92,52],P2:[94,52]},{...MAR1,K2:[103,57],F2:[106,79],P1:[92,52],P2:[94,52]}],osc:.8},
+  boxe:{p:[{H:[80,55],S:[82,21],F1:[94,100],F2:[66,100],E1:[90,38],P1:[100,24],E2:[88,40],P2:[97,27]},{H:[80,55],S:[83,21],F1:[94,100],F2:[66,100],P1:[118,22],E2:[88,40],P2:[97,27]}],osc:.9},
+  jack:{p:[{front:1,H:[80,54],S:[80,20],F1:[77,100],F2:[83,100],P1:[73,52],P2:[87,52]},{front:1,H:[76,55],S:[78,21],F1:[56,100],F2:[84,100],P1:[52,-4],P2:[106,-4]}],osc:1.4},
+  squatpointe:{p:[SQ,{...STAND,H:[80,51],S:[80,17],F1:[83,97],F2:[78,97]}],osc:2.6},
+  patineur:{p:[{front:1,H:[66,64],S:[70,30],F1:[50,100],F2:[98,100],P1:[86,44],P2:[92,46],k:1},{front:1,H:[94,64],S:[90,30],F1:[62,100],F2:[110,100],P1:[68,46],P2:[74,44],k:-1}],osc:1.8}
+};
+function nrm(a,b,l){const dx=b[0]-a[0],dy=b[1]-a[1],d=Math.hypot(dx,dy)||1;return [a[0]+dx/d*l,a[1]+dy/d*l]}
+function ik(A,T,l1,l2,s){const dx=T[0]-A[0],dy=T[1]-A[1];let d=Math.hypot(dx,dy);d=Math.max(Math.abs(l1-l2)+.01,Math.min(d,l1+l2-.01));const b=Math.atan2(dy,dx),a=Math.acos((l1*l1+d*d-l2*l2)/(2*l1*d));const J=[A[0]+l1*Math.cos(b+s*a),A[1]+l1*Math.sin(b+s*a)];return [J,nrm(J,T,l2)]}
+function resolve(p){
+  const H=p.H,S=nrm(H,p.S,L_T),dx=(S[0]-H[0])/L_T,dy=(S[1]-H[1])/L_T,a=(p.ht||0)*Math.PI/180;
+  const Hd=[S[0]+11*(dx*Math.cos(a)-dy*Math.sin(a)),S[1]+11*(dx*Math.sin(a)+dy*Math.cos(a))];
+  const j={H,S,Hd,c:p.c||0,front:p.front?1:0};
+  for(const i of [1,2]){
+    if(p["K"+i]){j["K"+i]=nrm(H,p["K"+i],L_TH);j["F"+i]=nrm(j["K"+i],p["F"+i],L_SH)}else[j["K"+i],j["F"+i]]=ik(H,p["F"+i],L_TH,L_SH,p.k??-1);
+    if(p["E"+i]){j["E"+i]=nrm(S,p["E"+i],L_UA);j["P"+i]=nrm(j["E"+i],p["P"+i],L_FA)}else[j["E"+i],j["P"+i]]=ik(S,p["P"+i],L_UA,L_FA,p.e??1);
+  }
+  return j;
+}
+function lerpJ(a,b,t){const o={};for(const k in a){const x=a[k],y=b[k];o[k]=Array.isArray(x)?[x[0]+(y[0]-x[0])*t,x[1]+(y[1]-x[1])*t]:x+(y-x)*t}return o}
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+const resCache={};
+function posesOf(id){return resCache[id]||(resCache[id]=(ANIM[id]||ANIM.install).p.map(resolve))}
+const f1=n=>n.toFixed(1);
+function propsSVG(an){
+  const out=[];
+  for(const pr of an.props||[]){
+    if(pr==="mat")out.push(`<rect x="8" y="99" width="144" height="3" rx="1.5" fill="var(--accent-soft)"/>`);
+    if(pr==="cushion")out.push(`<rect x="80" y="89" width="26" height="10" rx="4" fill="var(--breath-soft)" stroke="var(--breath)" stroke-width="1"/>`);
+    if(pr==="chairL")out.push(`<g stroke="var(--muted)" stroke-width="2.2" fill="none" stroke-linecap="round"><path d="M44 77H72M47 77V100M70 77V100M45 77V44"/></g>`);
+    if(pr==="chairR")out.push(`<g stroke="var(--muted)" stroke-width="2.2" fill="none" stroke-linecap="round"><path d="M116 73H148M119 73V100M146 73V100M148 73V44"/></g>`);
+    if(pr==="table")out.push(`<g stroke="var(--muted)" stroke-width="2.2" fill="none" stroke-linecap="round"><path d="M114 63H156M118 63V100M152 63V100"/></g>`);
+    if(pr==="step")out.push(`<rect x="94" y="85" width="44" height="15" rx="2" fill="var(--sunk)" stroke="var(--muted)" stroke-width="1.5"/>`);
+  }
+  return out.join("");
+}
+function figSVG(id,j,st){
+  const an=ANIM[id]||ANIM.install;
+  const limb=(A,B,C,foot)=>`M${f1(A[0])} ${f1(A[1])}L${f1(B[0])} ${f1(B[1])}L${f1(C[0])} ${f1(C[1])}`+(foot?`l${foot} 0`:"");
+  const dx=j.S[0]-j.H[0],dy=j.S[1]-j.H[1],len=Math.hypot(dx,dy)||1,mx=(j.H[0]+j.S[0])/2+dy/len*j.c*2,my=(j.H[1]+j.S[1])/2-dx/len*j.c*2;
+  const kind=st?String(st):"",ux=dx/len,uy=dy/len,lit=kind==="ex"||kind==="hold",far=j.front?1:.42;
+  let held="";
+  if(an.held==="bottle")held=[j.P1,j.P2].map(P=>`<rect x="${f1(P[0]-2.5)}" y="${f1(P[1]-6)}" width="5" height="12" rx="1.5" fill="var(--breath)"/>`).join("");
+  if(an.held==="box")held=`<rect x="${f1(j.P1[0]-8)}" y="${f1(j.P1[1]-2)}" width="16" height="11" rx="2" fill="var(--cardio-soft)" stroke="var(--cardio)" stroke-width="1.5"/>`;
+  const ax=(k,s)=>f1(j.H[0]+ux*k+s), ay=(k,s)=>f1(j.H[1]+uy*k+s);
+  return `<svg viewBox="0 -14 160 124" aria-hidden="true"><g${st&&st.mirror?' transform="translate(160 0) scale(-1 1)"':""}><line x1="0" y1="100.5" x2="160" y2="100.5" stroke="var(--line)" stroke-width="1"/>${propsSVG(an)}
+  <g stroke="var(--ink)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+   <path d="${limb(j.H,j.K2,j.F2,j.front?-4:5)}" opacity="${far}"/><path d="${limb(j.S,j.E2,j.P2)}" opacity="${far}"/>
+   <path d="M${f1(j.H[0])} ${f1(j.H[1])}Q${f1(mx)} ${f1(my)} ${f1(j.S[0])} ${f1(j.S[1])}" stroke-width="7"/>
+   <path d="${limb(j.H,j.K1,j.F1,j.front?4:5)}"/>
+  </g>
+  <circle cx="${f1(j.Hd[0])}" cy="${f1(j.Hd[1])}" r="7" fill="var(--ink)"/>
+  ${held}
+  <path d="${limb(j.S,j.E1,j.P1)}" stroke="var(--ink)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="${f1(j.H[0])}" cy="${f1(j.H[1])}" r="3.6" fill="var(--accent)" opacity="${lit?1:.35}"/>
+  <path d="M${ax(6,0)} ${ay(6,0)}L${ax(17,0)} ${ay(17,0)}M${ax(13,-uy*3.5)} ${ay(13,ux*3.5)}L${ax(17,0)} ${ay(17,0)}L${ax(13,uy*3.5)} ${ay(13,-ux*3.5)}" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="${lit?1:0}"/>
+  </g></svg>`;
+}
+// boucle de démonstration (fiche exercice, écran « à suivre »)
+function demoFrame(id,now){
+  const an=ANIM[id]||ANIM.install,ps=posesOf(id);
+  if(an.osc){const t=(Math.sin(now/1000*2*Math.PI/an.osc)+1)/2;return figSVG(id,lerpJ(ps[0],ps[1],ease(t)),"")}
+  const n=ps.length,seg=1.8,T=(now/1000)%(seg*n),i=Math.floor(T/seg),f=Math.min(1,(T-i*seg)/(seg*.7));
+  return figSVG(id,lerpJ(ps[i],ps[(i+1)%n],ease(f)),(i+1)%n===1?"ex":"");
+}
+function poseIndex(id,kind){const an=ANIM[id]||ANIM.install;if(an.seq&&an.seq[kind]!==undefined)return an.seq[kind];return ({in:0,ex:1,hold:1,rest:0,move:1}[kind])??0}
+
+/* ---------- diététique ---------- */
+// Menus calibrés pour environ 1 440 kcal ; les quantités entre crochets sont ajustées à l’objectif calculé.
+const MEALS={
+ pdj:[["[40] g de flocons d’avoine, 1 yaourt nature, ½ pomme râpée, cannelle, [10] g d’amandes",340],
+  ["[60] g de pain complet, 2 œufs brouillés, 1 tomate, 1 kiwi",360],
+  ["[150] g de fromage blanc 3 %, [30] g de muesli sans sucre ajouté, [100] g de fruits rouges",320],
+  ["[60] g de pain complet, [20] g de fromage frais, 1 tranche de blanc de dinde, 1 orange",330],
+  ["Porridge : [40] g d’avoine cuits dans [200] ml de lait demi‑écrémé, ½ banane",350],
+  ["[60] g de pain complet, [10] g de beurre de cacahuète, 1 yaourt nature, 1 clémentine",360],
+  ["Omelette de 2 œufs aux épinards, [40] g de pain complet, 1 poire",350]],
+ dej:[["Poulet rôti [120] g, haricots verts à volonté, [60] g de riz complet (cru), 1 c. à café d’huile d’olive · 1 fruit",520],
+  ["Salade de lentilles ([60] g crues) : carotte, oignon rouge, 1 œuf dur, 1 c. à soupe de vinaigrette · 1 yaourt nature",500],
+  ["Saumon [110] g, brocolis, [150] g de pommes de terre vapeur · 1 compote sans sucre ajouté",530],
+  ["Bœuf haché 5 % [100] g, courgettes poêlées, [60] g de pâtes complètes (crues) · 1 fruit",510],
+  ["Cabillaud [150] g, ratatouille, [60] g de quinoa (cru) · [100] g de fromage blanc",480],
+  ["Chili : [80] g de bœuf 5 %, [120] g de haricots rouges cuits, tomates, poivron, [40] g de riz (cru) · 1 clémentine",520],
+  ["Escalope de dinde [120] g, purée de patate douce [150] g, salade verte · 1 yaourt nature",480],
+  ["Taboulé : [50] g de semoule complète, [80] g de pois chiches, concombre, tomate, menthe, 1 c. à soupe d’huile d’olive, poulet [80] g",520],
+  ["Omelette de 3 œufs aux champignons, grande salade, [50] g de pain complet · 1 fruit",500],
+  ["Curry de pois chiches [150] g cuits, épinards, [50] ml de lait de coco léger, [50] g de riz basmati (cru) · 1 fruit",520],
+  ["Wok de crevettes [150] g, légumes variés, [60] g de nouilles de riz (crues), 1 c. à café d’huile",490],
+  ["Quiche sans pâte (2 œufs, [100] ml de lait, courgettes, [20] g d’emmental), salade, [40] g de pain complet",480],
+  ["Poulet basquaise [120] g, poivrons et tomates, [60] g de riz complet (cru) · 1 fruit",520],
+  ["Filet de porc [120] g, lentilles corail [50] g crues, carottes fondantes · 1 yaourt nature",510]],
+ col:[["1 pomme + [15] g d’amandes",170],["1 yaourt nature + 1 c. à café de miel",110],["[150] g de fromage blanc + cannelle",120],["Bâtonnets de carotte + [50] g de houmous",150],["1 banane",110],["2 kiwis + [10] g de noix",150],["1 skyr nature + [50] g de fruits rouges",130]],
+ din:[["Grand bol de soupe de légumes maison, 2 œufs à la coque, [40] g de pain complet · 1 yaourt",440],
+  ["Poisson blanc [130] g en papillote, poireaux, [100] g de pommes de terre · [100] g de fromage blanc",420],
+  ["Salade complète : [100] g de thon au naturel, haricots verts, tomate, [100] g de pommes de terre, 1 œuf, 1 c. à soupe de vinaigrette",470],
+  ["Gratin de courgettes avec [100] g de poulet et [20] g de fromage râpé, [40] g de pain complet",450],
+  ["Velouté de potiron, tartine de [40] g de pain complet + [30] g de chèvre frais, salade verte",420],
+  ["Wok de tofu [120] g, légumes, [40] g de riz (cru), 1 c. à café d’huile de sésame · 1 fruit",470],
+  ["1 galette de sarrasin jambon‑œuf‑champignons, salade verte · 1 compote sans sucre ajouté",460],
+  ["Minestrone avec [40] g de pâtes (crues) et [15] g de parmesan · 1 yaourt nature",430],
+  ["Maquereau [100] g, [120] g de lentilles cuites, crudités",480],
+  ["Pizza maison fine ([60] g de pâte), légumes grillés, [40] g de mozzarella, salade verte",480],
+  ["Soupe miso, pavé de saumon [100] g, épinards, [80] g de riz cuit",470],
+  ["Poêlée de légumes et [120] g de crevettes, [40] g de pain complet · 1 fruit",420],
+  ["Soupe de saison, [120] g de poulet froid, [100] g de taboulé",450],
+  ["Œufs cocotte (2) aux poireaux, [150] g de pommes de terre, salade · 1 yaourt nature",450]]
+};
+const ACT={sed:[1.2,"Sédentaire"],leg:[1.375,"Légère : séances seules"],mod:[1.55,"Modérée : séances + marches"]};
+// DATA END
+
+/* ---------- état ---------- */
+const LS="souffle-socle-v1";
+const ymd=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const today=()=>ymd(new Date());
+function freshProfile(){return {age:35,h:170,act:"leg",allait:false,goal:64}}
+function fresh(){return {v:2,start:today(),phase:0,sessions:[],weights:[{d:today(),kg:70}],profile:freshProfile(),updatedAt:0}}
+function migrate(o){const f=fresh();o=Object.assign(f,o||{});o.profile=Object.assign(freshProfile(),o.profile||{});o.phase=Math.max(0,Math.min(PHASES.length-1,o.phase|0));if(!Array.isArray(o.sessions))o.sessions=[];if(!Array.isArray(o.weights)||!o.weights.length)o.weights=f.weights;return o}
+let S=load();
+function load(){try{const r=localStorage.getItem(LS);if(r)return migrate(JSON.parse(r))}catch(e){}return fresh()}
+let remoteRef=null,writing=false,pendingWrite=false;
+function save(){S.updatedAt=Date.now();try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}pushRemote()}
+async function pushRemote(){if(!remoteRef)return;if(writing){pendingWrite=true;return}writing=true;
+  try{await remoteRef.set(JSON.parse(JSON.stringify(S)))}catch(e){}
+  writing=false;if(pendingWrite){pendingWrite=false;pushRemote()}}
+// Aperçu claude.ai uniquement. Sur le téléphone, tout reste en local.
+(async function initSync(){
+  try{
+    if(!window.claude||!window.claude.use)return;
+    const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);
+    if(!db||!user)return;
+    const id=await user.id();if(!id)return;
+    const ref=db.doc("data/users/"+id+"/progress");
+    const snap=await ref.get(),remote=snap.exists?snap.data():null;
+    remoteRef=ref;
+    if(remote&&(remote.updatedAt||0)>(S.updatedAt||0)){S=migrate(JSON.parse(JSON.stringify(remote)));try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}render()}
+    else if(S.updatedAt)pushRemote();
+  }catch(e){}
+})();
+
+/* ---------- logique ---------- */
+const P=()=>PHASES[S.phase];
+const inPhase=()=>S.sessions.filter(s=>s.phase===S.phase);
+const nextLetter=()=>inPhase().length%2===0?"A":"B";
+function dnum(d){const [y,m,x]=d.split("-").map(Number);return Date.UTC(y,m-1,x)/864e5}
+function daysAgo(d){return dnum(today())-dnum(d)}
+function weekDates(){const t=new Date(),dow=(t.getDay()+6)%7,out=[];for(let i=0;i<7;i++){const d=new Date(t);d.setDate(t.getDate()-dow+i);out.push(ymd(d))}return out}
+function readiness(){
+  const ss=inPhase(),p=P(),last=ss.slice(-3),l2=ss.slice(-2);
+  if(l2.length===2&&l2.every(s=>s.sym))return {kind:"back"};
+  if(S.phase>=PHASES.length-1)return {kind:"none"};
+  if(ss.length>=p.min&&last.every(s=>!s.sym)&&!l2.some(s=>s.fb==="dur"))return {kind:"up"};
+  return {kind:"none"};
+}
+const fmtMin=s=>Math.round(s/60)+" min";
+const fmtDate=d=>new Date(d+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"});
+function repsLabel(it){const e=EXOS[it[0]],c=cycleOf(it);if(c.length===1&&c[0][0]==="free")return c[0][1]+" s"+(e.sides?" × 2 côtés":"");if(e.c)return it[1]+" × "+c[0][1]+" s";return it[1]+(e.sides?" × 2 côtés":" fois")}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const dec=n=>String(n).replace(".",",");
+const lastKg=()=>{const w=[...S.weights].sort((a,b)=>a.d<b.d?-1:1);return w[w.length-1].kg};
+const r50=x=>Math.round(x/50)*50;
+function nutri(){
+  const p=S.profile,kg=lastKg();
+  const bmr=10*kg+6.25*p.h-5*p.age-161,tdee=bmr*ACT[p.act][0];
+  const target=p.allait?Math.max(1800,r50(tdee+200)):Math.max(1400,r50(tdee-450));
+  const lossW=Math.max(0,(tdee+(p.allait?500:0)-target)*7/7700);
+  return {bmr,tdee,target,prot:Math.round(kg*1.3/5)*5,lossW,kg};
+}
+
+/* ---------- vues ---------- */
+let tab="today",menuOff=0;
+const app=document.getElementById("app"),layer=document.getElementById("layer");
+function render(){
+  document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===tab?"page":"false"));
+  app.innerHTML=({today:vToday,program:vProgram,food:vFood,track:vTrack,method:vMethod})[tab]();
+}
+function ladder(){return `<div class="ladder" aria-label="Niveau ${S.phase+1} sur 6">${PHASES.map((_,i)=>`<span class="${i<S.phase?"done":i===S.phase?"cur":""}"></span>`).join("")}</div>`}
+function cardioMin(list){return Math.round(list.filter(it=>EXOS[it[0]].c).reduce((a,it)=>a+itemSeconds(it)-INTRO_S,0)/60)}
+
+function vToday(){
+  const p=P(),L=nextLetter(),list=p[L],ss=inPhase(),rd=readiness();
+  const wk=weekDates(),done=new Set(S.sessions.map(s=>s.d));
+  const thisWeek=S.sessions.filter(s=>wk.includes(s.d)).length,firstRun=S.sessions.length===0;
+  return `<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Niveau ${S.phase+1} · ${esc(p.key)}</div>
+    <h1>${firstRun?"Bienvenue. On commence en douceur.":thisWeek>=3?"Semaine complète. Bravo.":"Votre prochaine séance"}</h1>
+    ${ladder()}
+  </header>
+  ${firstRun?`<div class="notice"><b>Avant de commencer</b><span>Avec une descente d’organes, un bilan chez une sage‑femme ou un kiné spécialisé en périnée reste indispensable. Cette application accompagne leur travail, elle ne le remplace pas. Arrêtez un exercice si vous sentez une pesanteur, une « boule » ou une douleur.</span></div>`:""}
+  ${rd.kind==="up"?`<div class="card"><div class="eyebrow" style="color:var(--ok)">Prête pour la suite</div><p>Vous avez rempli les critères du niveau ${esc(p.key)}. Vous pouvez passer au niveau ${S.phase+2}, ${esc(PHASES[S.phase+1].key)}, ou rester encore un peu.</p><div class="row"><button class="btn" data-act="up">Passer au niveau ${S.phase+2}</button></div></div>`:""}
+  ${rd.kind==="back"?`<div class="notice"><b>Deux séances avec une gêne</b><span>Restez à ce niveau, faites la séance plus lentement, et terminez par la relaxation jambes surélevées. ${S.phase>0?"Si la gêne continue, revenez au niveau précédent.":""} Si elle persiste en dehors des séances, parlez‑en à la sage‑femme ou au kiné.</span>${S.phase>0?`<div class="row"><button class="btn ghost" data-act="down">Revenir au niveau ${S.phase}</button></div>`:""}</div>`:""}
+  <section class="hero">
+    <div class="spread"><h2>Séance ${L}</h2><span class="muted num">≈ ${fmtMin(sessionSeconds(list))}</span></div>
+    <div class="meta"><span class="pill acc">${esc(p.place)}</span><span class="pill car">${cardioMin(list)} min de cardio</span><span class="pill">${ss.length} / ${p.min} séances du niveau</span></div>
+    <ul class="exlist">${list.map(it=>`<li class="${EXOS[it[0]].c?"c":""}"><span>${esc(EXOS[it[0]].n)}</span><span>${repsLabel(it)}</span></li>`).join("")}</ul>
+    <button class="btn block" data-act="start">Commencer la séance</button>
+    <p class="small muted">Prévoyez un tapis, un coussin ferme, une chaise et deux bouteilles d’eau. Le lecteur montre chaque mouvement et guide chaque souffle.</p>
+  </section>
+  <section class="card">
+    <div class="spread"><h3>Cette semaine</h3><span class="muted small num">${thisWeek} / 3 séances</span></div>
+    <div class="week">${wk.map((d,i)=>`<div><i class="${done.has(d)?"done":""} ${d===today()?"today":""}">${done.has(d)?"✓":""}</i>${["L","M","M","J","V","S","D"][i]}</div>`).join("")}</div>
+    <p class="small muted">2 à 3 séances par semaine, avec au moins un jour de repos entre deux. Les autres jours, une marche rapide de 30 minutes.</p>
+  </section>
+  <section class="card"><h3>Au quotidien, ce niveau</h3><ul class="clean">${p.daily.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></section>
+  </div>`;
+}
+
+function vProgram(){
+  return `<div class="wrap">
+  <header class="top"><div class="eyebrow">6 niveaux · environ 6 mois</div><h1>Le programme</h1>${ladder()}</header>
+  <p class="muted">On part des positions où les organes remontent (allongée, quatre pattes), puis on se redresse : assise, debout, et enfin le mouvement. Le cardio, toujours sans saut, grandit avec les niveaux. Touchez un exercice pour voir l’animation.</p>
+  ${PHASES.map((p,i)=>`<details class="phase" ${i===S.phase?"open":""}>
+    <summary><div class="spread"><span class="eyebrow">Niveau ${i+1} · ${esc(p.weeks)}</span>${i<S.phase?`<span class="pill on">Fait</span>`:i===S.phase?`<span class="pill acc">En cours</span>`:""}</div><h2>${esc(p.key)}</h2><span class="small muted">${esc(p.place)}</span></summary>
+    <div class="body">
+      <p>${esc(p.goal)}</p>
+      ${["A","B"].map(L=>`<div class="lib"><div class="spread"><h3>Séance ${L}</h3><span class="small muted num">≈ ${fmtMin(sessionSeconds(p[L]))} · ${cardioMin(p[L])} min cardio</span></div>${p[L].map(it=>`<button data-ex="${it[0]}"><span>${esc(EXOS[it[0]].n)}</span><span class="muted num">${repsLabel(it)}</span></button>`).join("")}</div>`).join("")}
+      <p class="small"><b>Pour passer au niveau suivant :</b> ${esc(p.next)}</p>
+      ${i!==S.phase?`<button class="btn ghost" data-setphase="${i}">Choisir ce niveau</button>`:""}
+    </div></details>`).join("")}
+  </div>`;
+}
+
+function scaleTxt(t,f){return esc(t).replace(/\[(\d+)\]/g,(_,n)=>String(Math.max(5,Math.round(n*f/5)*5)))}
+function vFood(){
+  const n=nutri(),p=S.profile,f=n.target/1440;
+  const di=((daysAgo(S.start)+menuOff)%14+14)%14;
+  const d=new Date();d.setDate(d.getDate()+menuOff);
+  const day=[["Petit‑déjeuner",MEALS.pdj[di%7]],["Déjeuner",MEALS.dej[di]],["Collation",MEALS.col[(di*3)%7]],["Dîner",MEALS.din[di]]];
+  const tot=day.reduce((a,m)=>a+m[1][1],0)*f;
+  const toGoal=Math.max(0,n.kg-p.goal),weeks=n.lossW>0?Math.ceil(toGoal/n.lossW):0;
+  return `<div class="wrap">
+  <header class="top"><div class="eyebrow">Perte de poids douce</div><h1>Repas</h1></header>
+  <div class="stats">
+    <div class="stat"><b>${n.target}</b><span>kcal par jour</span></div>
+    <div class="stat"><b>${n.prot} g</b><span>protéines par jour</span></div>
+    <div class="stat"><b>${dec(n.lossW.toFixed(1))}</b><span>kg par semaine environ</span></div>
+  </div>
+  <section class="card">
+    <div class="daynav"><button class="btn ghost sm" data-menu="-1" aria-label="Jour précédent">‹</button><div><div class="eyebrow">Menu ${di+1} / 14</div><h3>${menuOff===0?"Aujourd’hui":esc(d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"}))}</h3></div><button class="btn ghost sm" data-menu="1" aria-label="Jour suivant">›</button></div>
+    <div>${day.map(m=>`<div class="meal"><span class="t">${m[0]}</span><span class="k">≈ ${Math.round(m[1][1]*f/10)*10} kcal</span><p>${scaleTxt(m[1][0],f)}</p></div>`).join("")}</div>
+    <p class="small muted num">Total ≈ ${Math.round(tot/10)*10} kcal. Légumes, salade et soupe sans féculents : à volonté. Les quantités sont déjà ajustées à votre objectif.</p>
+  </section>
+  <section class="card"><h3>Les règles qui comptent</h3><ul class="clean">
+    <li>Des protéines à chaque repas (œufs, poisson, viande, laitages, légumineuses) : elles calment la faim et protègent le muscle.</li>
+    <li>La moitié de l’assiette en légumes, midi et soir.</li>
+    <li>Féculents complets plutôt que blancs, en quantité mesurée.</li>
+    <li>1,5 à 2 litres d’eau par jour. Les boissons sucrées et l’alcool, rarement.</li>
+    <li>Plats pensés pour toute la famille : les enfants prennent simplement plus de féculents.</li>
+    <li>Un repas plaisir par semaine, sans culpabilité : c’est la régularité qui fait maigrir.</li>
+  </ul></section>
+  <section class="card"><h3>Transit et périnée</h3>
+    <p class="small">La constipation fait pousser, et pousser aggrave la descente d’organes. C’est un point clé de la méthode de Gasquet.</p>
+    <ul class="clean small"><li>25 à 30 g de fibres par jour : légumes, fruits (kiwi, pruneaux), céréales complètes, légumineuses.</li><li>Aux toilettes, pieds surélevés sur un petit tabouret, dos droit.</li><li>Ne poussez jamais : expirez longuement, comme dans une paille, et laissez venir.</li></ul>
+  </section>
+  <section class="card"><h3>Votre profil</h3>
+    <form class="form" id="pform">
+      <label for="p-age">Âge</label><input id="p-age" type="number" min="18" max="90" value="${p.age}">
+      <label for="p-h">Taille (cm)</label><input id="p-h" type="number" min="130" max="210" value="${p.h}">
+      <label for="p-goal">Objectif de poids (kg)</label><input id="p-goal" type="number" step="0.5" min="40" max="150" value="${p.goal}">
+      <label for="p-act">Activité</label><select id="p-act">${Object.entries(ACT).map(([k,v])=>`<option value="${k}" ${p.act===k?"selected":""}>${v[1]}</option>`).join("")}</select>
+      <label for="p-al">Allaitement en cours</label><select id="p-al"><option value="0" ${!p.allait?"selected":""}>Non</option><option value="1" ${p.allait?"selected":""}>Oui</option></select>
+      <span></span><button class="btn soft" type="submit">Mettre à jour</button>
+    </form>
+    <p class="small muted num">Poids actuel ${dec(n.kg)} kg (onglet Suivi). Métabolisme de base ≈ ${Math.round(n.bmr)} kcal, dépense ≈ ${Math.round(n.tdee)} kcal par jour.${toGoal>0&&weeks?` Objectif atteint en ${weeks} semaines environ, à ce rythme.`:""}${p.allait?" Pendant l’allaitement, le déficit reste faible et l’apport ne descend pas sous 1 800 kcal.":""} L’apport ne descend jamais sous 1 400 kcal.</p>
+  </section>
+  </div>`;
+}
+
+function vTrack(){
+  const w=[...S.weights].sort((a,b)=>a.d<b.d?-1:1),first=w[0],last=w[w.length-1];
+  const diff=last.kg-first.kg,total=S.sessions.length,mins=Math.round(S.sessions.reduce((a,s)=>a+(s.dur||0),0)/60);
+  const bmi=dec((last.kg/Math.pow(S.profile.h/100,2)).toFixed(1));
+  return `<div class="wrap">
+  <header class="top"><div class="eyebrow">Depuis le ${fmtDate(S.start)}</div><h1>Suivi</h1></header>
+  <div class="stats">
+    <div class="stat"><b>${total}</b><span>séances</span></div>
+    <div class="stat"><b>${mins}</b><span>minutes</span></div>
+    <div class="stat"><b>${diff>0?"+":""}${dec(diff.toFixed(1))}</b><span>kg depuis le début</span></div>
+  </div>
+  <section class="card">
+    <div class="spread"><h3>Poids</h3><span class="small muted num">IMC ${bmi}</span></div>
+    ${chart(w)}
+    <form class="row" id="wform"><label class="small" for="kg">Poids du jour (kg)</label><input id="kg" type="number" step="0.1" min="35" max="200" inputmode="decimal" value="${last.kg}"><button class="btn soft" type="submit">Enregistrer</button></form>
+    <p class="small muted">Pesez‑vous une fois par semaine, le même jour, le matin. Le muscle gagné peut masquer la perte de graisse au début : le tour de taille parle souvent plus tôt que la balance.</p>
+  </section>
+  <section class="card"><h3>Historique</h3>
+    ${total?`<ul class="hist">${[...S.sessions].reverse().slice(0,30).map(s=>`<li><span>${fmtDate(s.d)} · Niv. ${s.phase+1} ${s.s}</span><span class="muted">${{facile:"Facile",ok:"Adaptée",dur:"Difficile"}[s.fb]||""}${s.sym?" · gêne":""}</span></li>`).join("")}</ul>`:`<p class="muted small">Les séances apparaîtront ici dès la première terminée.</p>`}
+  </section>
+  <section class="card"><h3>Sauvegarde</h3>
+    <p class="small muted">Les données restent sur ce téléphone. Faites une sauvegarde de temps en temps, par exemple avant de changer de téléphone.</p>
+    <div class="row"><button class="btn soft" data-act="export">Enregistrer une sauvegarde</button><label class="btn ghost" for="imp" style="cursor:pointer">Restaurer</label><input id="imp" type="file" accept="application/json,.json" hidden></div>
+    <div class="row"><button class="btn ghost" data-act="reset">Tout recommencer</button></div>
+  </section>
+  </div>`;
+}
+function chart(w){
+  if(w.length<2)return `<p class="small muted">Ajoutez une deuxième pesée pour voir la courbe. Départ : <span class="num">${dec(w[0].kg)} kg</span>.</p>`;
+  const W=320,H=140,pl=34,pr=10,pt=12,pb=22;
+  const xs=w.map(p=>dnum(p.d)),ys=w.map(p=>p.kg);
+  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.floor(Math.min(...ys)-1),y1=Math.ceil(Math.max(...ys)+1);
+  const X=t=>pl+(W-pl-pr)*((t-x0)/((x1-x0)||1)),Y=v=>pt+(H-pt-pb)*(1-(v-y0)/((y1-y0)||1));
+  const pts=w.map((p,i)=>[X(xs[i]),Y(p.kg)]);
+  const line=pts.map((p,i)=>(i?"L":"M")+f1(p[0])+" "+f1(p[1])).join(" ");
+  const area=line+` L${f1(pts[pts.length-1][0])} ${H-pb} L${f1(pts[0][0])} ${H-pb} Z`;
+  const ticks=[...new Set([y0,Math.round((y0+y1)/2),y1])],lp=pts[pts.length-1];
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Courbe de poids">
+   ${ticks.map(t=>`<line x1="${pl}" x2="${W-pr}" y1="${Y(t)}" y2="${Y(t)}" stroke="var(--line)" stroke-width="1"/><text x="${pl-6}" y="${Y(t)+4}" text-anchor="end" font-size="10" fill="var(--muted)">${t}</text>`).join("")}
+   <path d="${area}" fill="var(--breath-soft)" stroke="none"/>
+   <path d="${line}" fill="none" stroke="var(--breath)" stroke-width="2.5" stroke-linejoin="round"/>
+   <circle cx="${lp[0]}" cy="${lp[1]}" r="4.5" fill="var(--breath)"/>
+   <text x="${pl}" y="${H-6}" font-size="10" fill="var(--muted)">${fmtDate(w[0].d)}</text>
+   <text x="${W-pr}" y="${H-6}" font-size="10" text-anchor="end" fill="var(--muted)">${fmtDate(w[w.length-1].d)}</text>
+  </svg>`;
+}
+
+function vMethod(){
+  return `<div class="wrap prose">
+  <header class="top"><div class="eyebrow">Approche posturo‑respiratoire (APOR)</div><h1>La méthode de Gasquet</h1></header>
+  <p>Médecin et professeure de yoga, Bernadette de Gasquet a construit une approche qui part d’un constat : la plupart des exercices d’abdominaux classiques poussent les organes vers le bas et abîment le périnée. Sa méthode associe posture, respiration et périnée, et ne fait jamais travailler l’un sans les autres.</p>
+  <section class="card"><h3>Les cinq règles</h3>
+    <div class="rule"><span class="k">1</span><p><b>L’expiration commence par le bas.</b> On ferme et remonte le périnée, puis le bas‑ventre rentre, puis le nombril. Jamais l’inverse : serrer d’abord la taille pousse les organes vers le bas.</p></div>
+    <div class="rule"><span class="k">2</span><p><b>L’effort se fait sur l’expiration.</b> Se lever, soulever, monter, tenir une position : toujours en soufflant. Jamais en apnée.</p></div>
+    <div class="rule"><span class="k">3</span><p><b>Se grandir.</b> Éloigner le sommet du crâne du coccyx (auto‑grandissement) étire la colonne, affine la taille et fait remonter les organes.</p></div>
+    <div class="rule"><span class="k">4</span><p><b>Ne jamais pousser vers le bas.</b> Pas de ventre bombé à l’effort, pas de poussée aux toilettes, pas d’abdominaux en « crunch ».</p></div>
+    <div class="rule"><span class="k">5</span><p><b>Verrouiller avant l’effort.</b> Serrer le périnée avant de tousser, éternuer, rire, porter. Ce réflexe s’apprend puis devient automatique.</p></div>
+  </section>
+  <section class="card"><h3>Ce qu’on évite</h3><ul class="clean">
+    <li>Les relevés de buste, crunchs et « abdos » classiques.</li>
+    <li>Lever les deux jambes tendues allongée sur le dos.</li>
+    <li>Rentrer le ventre en permanence ou en inspirant.</li>
+    <li>L’apnée et les grandes inspirations avant l’effort.</li>
+    <li>Le « stop‑pipi » comme exercice.</li>
+    <li>Sauts, course, corde à sauter, trampoline et charges lourdes, tant qu’un bilan ne les a pas autorisés.</li>
+  </ul></section>
+  <section class="card"><h3>Pourquoi cet ordre</h3>
+    <p>Avec une descente d’organes, la pesanteur est l’ennemie du début. On commence donc bassin surélevé et à quatre pattes, là où les organes remontent d’eux‑mêmes. On se redresse ensuite : assise, debout, puis en mouvement.</p>
+    <p>On travaille les deux types de fibres du périnée : les fibres lentes (tenues de 3 à 10 secondes) et les fibres rapides (contractions d’une seconde, pour la toux et le rire). Le relâchement compte autant que la contraction.</p>
+    <p>Le cardio est toujours sans impact : marche active, boxe dans le vide, pas latéraux, montées de marche. Il passe d’environ 5 minutes au niveau 1 à une douzaine de minutes au niveau 6, en intervalles.</p>
+  </section>
+  <section class="card"><h3>Pour perdre du poids</h3>
+    <p>Les séances construisent du muscle et font monter le cœur. Elles ne suffisent pas seules : les deux autres leviers sont 2 à 3 marches rapides de 30 minutes par semaine et l’alimentation (onglet Repas). Visez une perte lente, 0,5 kg par semaine au plus.</p>
+  </section>
+  <div class="notice"><b>Quand consulter</b><span>Sensation de boule ou de pesanteur qui augmente, fuites qui s’aggravent, douleur, saignement : arrêtez les exercices concernés et voyez le médecin, la sage‑femme ou le kiné. Avant de reprendre course ou sauts, faites un bilan du périnée.</span></div>
+  <section class="card"><h3>Références</h3>
+    <ol class="refs">
+      <li>B. de Gasquet, <i>Abdominaux : arrêtez le massacre !</i>, Marabout. Principes APOR, expiration de bas en haut, exercices à éviter.</li>
+      <li>B. de Gasquet, <i>Périnée : arrêtons le massacre !</i>, Marabout. Verrouillage, positions, toilettes.</li>
+      <li>S. Hagen et al., « Individualised pelvic floor muscle training in women with pelvic organ prolapse (POPPY) », <i>The Lancet</i>, 2014;383:796‑806. Le renforcement du périnée réduit les symptômes de prolapsus.</li>
+      <li>NICE, guideline NG210 « Pelvic floor dysfunction », 2021. Au moins 3 mois de renforcement du périnée, encadré.</li>
+      <li>Cochrane, Dumoulin et al., 2018 : renforcement du périnée et incontinence urinaire chez la femme.</li>
+      <li>OMS, recommandations sur l’activité physique, 2020 : 150 minutes d’activité modérée par semaine et du renforcement musculaire 2 fois par semaine.</li>
+      <li>Mifflin et St Jeor, <i>Am J Clin Nutr</i>, 1990. Équation utilisée pour le métabolisme de base.</li>
+      <li>Santé publique France, recommandations nutritionnelles (mangerbouger.fr) : légumes, fibres, féculents complets, légumineuses.</li>
+    </ol>
+  </section>
+  <p class="small muted">Programme conçu d’après ces principes ; il ne remplace pas une rééducation encadrée.</p>
+  </div>`;
+}
+
+/* ---------- fiche exercice ---------- */
+let demo=null;
+function exSheet(id){
+  const e=EXOS[id];
+  layer.innerHTML=`<div class="sheet" data-close><div class="panel" role="dialog" aria-label="${esc(e.n)}">
+   <div class="spread"><h2>${esc(e.n)}</h2><button class="btn ghost sm" data-close>Fermer</button></div>
+   <div class="fig" id="demo-fig"></div>${exDetail(e)}</div></div>`;
+  startDemo(id);
+}
+function startDemo(id){
+  stopDemo();const el=document.getElementById("demo-fig");if(!el)return;
+  let lastT=0;const loop=now=>{if(demo!==loop)return;if(now-lastT>33){el.innerHTML=demoFrame(id,now);lastT=now}requestAnimationFrame(loop)};
+  demo=loop;requestAnimationFrame(loop);
+}
+function stopDemo(){demo=null}
+function exDetail(e){return `<p class="small"><b>Position.</b> ${esc(e.pos)}</p>
+   <p class="small muted">${esc(e.why)}</p>
+   <ol class="clean small">${e.how.map(h=>`<li>${esc(h)}</li>`).join("")}</ol>
+   <p class="small"><b>À éviter :</b> ${e.avoid.map(esc).join(" · ")}</p>`}
+
+/* ---------- lecteur ---------- */
+let PL=null;
+function buildSteps(list){
+  const steps=[];
+  list.forEach((it,xi)=>{
+    const e=EXOS[it[0]],c=cycleOf(it);
+    steps.push({type:"intro",xi,id:it[0],t:INTRO_S});
+    (e.sides?["Côté droit","Côté gauche"]:[null]).forEach((side,si)=>{
+      if(si>0)steps.push({type:"step",xi,id:it[0],k:"move",t:SWITCH_S,txt:"Changez de côté",side:"Côté gauche",rep:0,reps:it[1],mirror:1});
+      for(let r=0;r<it[1];r++)c.forEach(s=>steps.push({type:"step",xi,id:it[0],k:s[0],t:s[1],txt:s[2],side,rep:r+1,reps:it[1],mirror:si}));
+    });
+  });
+  return steps;
+}
+let actx=null,sound=true;
+function beep(k){if(!sound||!actx)return;try{const o=actx.createOscillator(),g=actx.createGain();o.frequency.value={in:440,ex:620,hold:700,rest:360,move:880,free:520,cardio:780,intro:500}[k]||500;o.type="sine";g.gain.setValueAtTime(.0001,actx.currentTime);g.gain.exponentialRampToValueAtTime(.18,actx.currentTime+.02);g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+.25);o.connect(g).connect(actx.destination);o.start();o.stop(actx.currentTime+.3)}catch(e){}
+  try{navigator.vibrate&&navigator.vibrate(k==="ex"||k==="hold"||k==="cardio"?60:25)}catch(e){}}
+let wake=null;
+async function lockWake(){try{wake=await navigator.wakeLock.request("screen")}catch(e){}}
+function startSession(){
+  const p=P(),L=nextLetter(),list=p[L];
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.resume&&actx.resume()}catch(e){}
+  lockWake();
+  PL={L,list,steps:buildSteps(list),i:0,elapsed:0,paused:false,last:performance.now(),t0:Date.now(),from:0,to:0,lastDraw:0};
+  PL.total=PL.steps.reduce((a,s)=>a+s.t,0);
+  layer.innerHTML=`<div class="player" role="dialog" aria-label="Séance en cours">
+    <div class="head"><div class="spread"><span class="eyebrow" id="pl-ex"></span><button class="btn ghost sm" id="pl-quit">Quitter</button></div><div class="prog"><i id="pl-prog"></i></div></div>
+    <div class="stage"><div class="stage-in" id="pl-stage"></div></div>
+    <div class="ctl">
+      <div style="display:flex;gap:10px;justify-content:flex-end"><button class="iconbtn" id="pl-prev" aria-label="Exercice précédent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button></div>
+      <button class="main" id="pl-play" aria-label="Pause"></button>
+      <div style="display:flex;gap:10px"><button class="iconbtn" id="pl-next" aria-label="Exercice suivant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button><button class="iconbtn" id="pl-snd" aria-label="Son"></button></div>
+    </div></div>`;
+  document.getElementById("pl-quit").onclick=confirmQuit;
+  document.getElementById("pl-play").onclick=()=>{PL.paused=!PL.paused;PL.last=performance.now();drawCtl()};
+  document.getElementById("pl-next").onclick=()=>jumpEx(1);
+  document.getElementById("pl-prev").onclick=()=>jumpEx(-1);
+  document.getElementById("pl-snd").onclick=()=>{sound=!sound;drawCtl()};
+  drawCtl();enterStep();requestAnimationFrame(tick);
+}
+const ICON={play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',pause:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>',on:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16 9a4 4 0 010 6"/></svg>',off:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 10v4h4l5 4V6L8 10z"/><path d="M17 10l4 4M21 10l-4 4"/></svg>'};
+function drawCtl(){const b=document.getElementById("pl-play");if(!b)return;b.innerHTML=PL.paused?ICON.play:ICON.pause;b.setAttribute("aria-label",PL.paused?"Reprendre":"Pause");const s=document.getElementById("pl-snd");s.innerHTML=sound?ICON.on:ICON.off;s.setAttribute("aria-label",sound?"Couper le son":"Activer le son")}
+function jumpEx(dir){
+  const cur=PL.steps[PL.i].xi,target=Math.max(0,cur+dir);
+  if(target>=PL.list.length){finish();return}
+  PL.i=PL.steps.findIndex(s=>s.xi===target);PL.elapsed=0;enterStep();
+}
+function enterStep(){
+  const st=PL.steps[PL.i],e=EXOS[st.id],stage=document.getElementById("pl-stage");
+  document.getElementById("pl-ex").textContent=`Exercice ${st.xi+1} / ${PL.list.length} · Séance ${PL.L}`;
+  stopDemo();
+  if(st.type==="intro"){
+    const it=PL.list[st.xi];
+    stage.innerHTML=`<div class="intro"><div class="eyebrow">À suivre · ${repsLabel(it)}</div><h1>${esc(e.n)}</h1><div class="fig" id="demo-fig"></div>${exDetail(e)}
+      <div class="row"><button class="btn" id="pl-go">Je suis en place</button><span class="muted small num" id="pl-cd"></span></div></div>`;
+    document.getElementById("pl-go").onclick=()=>{PL.elapsed=st.t};
+    startDemo(st.id);PL.from=PL.to=0;beep("intro");
+  }else{
+    const osc=st.k==="cardio"||st.k==="free";
+    PL.from=PL.to;PL.to=osc?0:poseIndex(st.id,st.k);
+    stage.innerHTML=`<div class="reps">${esc((st.side?st.side+" · ":"")+(st.rep?(e.c?"Bloc ":"Répétition ")+st.rep+" / "+st.reps:""))}</div>
+      <div class="fig" id="pl-fig"></div>
+      <div class="cue" style="${st.k==="cardio"?"color:var(--cardio)":""}">${esc(st.txt)}</div>
+      <div class="viz">
+        <div class="ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="var(--sunk)" stroke-width="6"/><circle id="pl-arc" cx="50" cy="50" r="46" fill="none" stroke="${st.k==="cardio"?"var(--cardio)":"var(--accent)"}" stroke-width="6" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="0"/></svg><div class="t" id="pl-t"></div></div>
+        <div class="col" aria-hidden="true"><i id="pl-col"></i></div>
+        <div class="col-labels" aria-hidden="true"><span>nombril</span><span>bas‑ventre</span><span>périnée</span></div>
+      </div>`;
+    PL.lastDraw=0;beep(st.k);
+  }
+}
+let colLevel=0;
+function tick(now){
+  if(!PL)return;
+  const dt=(now-PL.last)/1000;PL.last=now;
+  if(!PL.paused)PL.elapsed+=dt;
+  const st=PL.steps[PL.i];
+  if(PL.elapsed>=st.t){PL.elapsed=0;PL.i++;if(PL.i>=PL.steps.length){finish();return}enterStep()}
+  else{
+    const f=PL.elapsed/st.t,left=Math.ceil(st.t-PL.elapsed);
+    if(st.type==="intro"){const cd=document.getElementById("pl-cd");if(cd)cd.textContent=`Départ dans ${left} s`}
+    else{
+      const t=document.getElementById("pl-t");if(t&&t.textContent!=String(left))t.textContent=left;
+      const arc=document.getElementById("pl-arc");if(arc)arc.setAttribute("stroke-dashoffset",f1(289*f));
+      let target=colLevel;
+      if(st.k==="ex")target=f;else if(st.k==="hold")target=1;else if(st.k==="rest"||st.k==="in")target=Math.max(0,1-f);else target=0;
+      colLevel+=(target-colLevel)*Math.min(1,dt*10);
+      const col=document.getElementById("pl-col");if(col)col.style.height=f1(colLevel*100)+"%";
+      if(now-PL.lastDraw>33){
+        PL.lastDraw=now;
+        const fig=document.getElementById("pl-fig"),ps=posesOf(st.id),an=ANIM[st.id]||ANIM.install;
+        let j;
+        if(st.k==="cardio"||st.k==="free"){const tt=PL.paused?0:(Math.sin(now/1000*2*Math.PI/(an.osc||2))+1)/2;j=lerpJ(ps[0],ps[1],ease(tt))}
+        else if(st.k==="rest"&&e_c(st.id))j=ps[0];
+        else j=lerpJ(ps[PL.from]||ps[0],ps[PL.to]||ps[0],ease(Math.min(1,f*1.15)));
+        if(fig)fig.innerHTML=figSVG(st.id,j,{toString:()=>st.k,mirror:st.mirror});
+      }
+    }
+  }
+  const done=PL.steps.slice(0,PL.i).reduce((a,s)=>a+s.t,0)+PL.elapsed;
+  const pg=document.getElementById("pl-prog");if(pg)pg.style.width=f1(100*done/PL.total)+"%";
+  requestAnimationFrame(tick);
+}
+const e_c=id=>!!EXOS[id].c;
+function confirmQuit(){
+  PL.paused=true;drawCtl();stopDemo();
+  document.getElementById("pl-stage").innerHTML=`<div class="intro"><h2>Arrêter la séance ?</h2><p class="muted">Une séance arrêtée n’est pas comptée. Si vous arrêtez à cause d’une gêne, c’est la bonne décision.</p>
+   <div class="row"><button class="btn" id="q-keep">Continuer</button><button class="btn ghost" id="q-stop">Arrêter</button></div></div>`;
+  document.getElementById("q-keep").onclick=()=>{PL.paused=false;PL.last=performance.now();drawCtl();enterStep()};
+  document.getElementById("q-stop").onclick=closePlayer;
+}
+function closePlayer(){PL=null;stopDemo();layer.innerHTML="";try{wake&&wake.release()}catch(e){}wake=null;render()}
+function finish(){
+  const dur=Math.round((Date.now()-PL.t0)/1000),L=PL.L;PL=null;stopDemo();
+  try{wake&&wake.release()}catch(e){}
+  let fb=null,sym=null;
+  layer.innerHTML=`<div class="player"><div></div><div class="stage"><div class="stage-in"><div class="intro">
+    <div class="eyebrow">Séance ${L} terminée · ${fmtMin(dur)}</div><h1>Bravo. Comment c’était ?</h1>
+    <div class="choice" id="fb"><button data-v="facile" aria-pressed="false">Facile, je pourrais faire plus</button><button data-v="ok" aria-pressed="false">Adaptée</button><button data-v="dur" aria-pressed="false">Difficile</button></div>
+    <h3>Pendant ou après la séance, avez‑vous senti une pesanteur, une « boule » ou une fuite ?</h3>
+    <div class="choice" id="sym"><button data-v="0" aria-pressed="false">Non</button><button data-v="1" aria-pressed="false">Oui</button></div>
+    <button class="btn block" id="fb-save" disabled>Enregistrer la séance</button>
+  </div></div></div><div></div></div>`;
+  const upd=()=>{document.getElementById("fb-save").disabled=!(fb&&sym!==null)};
+  document.querySelectorAll("#fb button").forEach(b=>b.onclick=()=>{fb=b.dataset.v;document.querySelectorAll("#fb button").forEach(x=>x.setAttribute("aria-pressed",x===b));upd()});
+  document.querySelectorAll("#sym button").forEach(b=>b.onclick=()=>{sym=b.dataset.v==="1";document.querySelectorAll("#sym button").forEach(x=>x.setAttribute("aria-pressed",x===b));upd()});
+  document.getElementById("fb-save").onclick=()=>{S.sessions.push({d:today(),phase:S.phase,s:L,fb,sym,dur});save();layer.innerHTML="";tab="today";render();toast("Séance enregistrée")};
+}
+function toast(t){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2400)}
+
+/* ---------- sauvegarde ---------- */
+function exportData(){
+  try{const blob=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="souffle-socle-"+today()+".json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast("Sauvegarde enregistrée dans Téléchargements")}
+  catch(e){toast("La sauvegarde n’a pas pu être créée sur cet appareil")}
+}
+function importData(file){
+  const r=new FileReader();
+  r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||!Array.isArray(o.sessions))throw 0;S=migrate(o);save();render();toast("Sauvegarde restaurée")}catch(e){toast("Ce fichier n’est pas une sauvegarde Souffle & Socle")}};
+  r.readAsText(file);
+}
+
+/* ---------- événements ---------- */
+document.getElementById("tabs").addEventListener("click",e=>{const b=e.target.closest("button[data-tab]");if(b){tab=b.dataset.tab;menuOff=0;render();window.scrollTo(0,0)}});
+app.addEventListener("click",e=>{
+  const a=e.target.closest("[data-act]"),ex=e.target.closest("[data-ex]"),sp=e.target.closest("[data-setphase]"),mn=e.target.closest("[data-menu]");
+  if(ex)return exSheet(ex.dataset.ex);
+  if(mn){menuOff+=+mn.dataset.menu;return render()}
+  if(sp){S.phase=+sp.dataset.setphase;save();tab="today";render();return toast("Niveau "+(S.phase+1)+" sélectionné")}
+  if(!a)return;
+  const act=a.dataset.act;
+  if(act==="start")startSession();
+  if(act==="up"){S.phase=Math.min(PHASES.length-1,S.phase+1);save();render();toast("Niveau "+(S.phase+1)+" : "+P().key)}
+  if(act==="down"){S.phase=Math.max(0,S.phase-1);save();render()}
+  if(act==="export")exportData();
+  if(act==="reset"){if(a.dataset.confirm){S=fresh();save();render();toast("Programme remis à zéro")}else{a.dataset.confirm="1";a.textContent="Confirmer : tout effacer";a.classList.remove("ghost")}}
+});
+app.addEventListener("change",e=>{if(e.target.id==="imp"&&e.target.files[0])importData(e.target.files[0])});
+app.addEventListener("submit",e=>{
+  e.preventDefault();
+  if(e.target.id==="wform"){
+    const kg=parseFloat(document.getElementById("kg").value);if(!(kg>=35&&kg<=200))return toast("Entrez un poids entre 35 et 200 kg");
+    const d=today();S.weights=S.weights.filter(w=>w.d!==d);S.weights.push({d,kg:Math.round(kg*10)/10});save();render();toast("Poids enregistré");
+  }
+  if(e.target.id==="pform"){
+    const v=id=>parseFloat(document.getElementById(id).value);
+    const age=v("p-age"),h=v("p-h"),goal=v("p-goal");
+    if(!(age>=18&&age<=90&&h>=130&&h<=210&&goal>=40&&goal<=150))return toast("Vérifiez l’âge, la taille et l’objectif");
+    S.profile={age,h,goal,act:document.getElementById("p-act").value,allait:document.getElementById("p-al").value==="1"};save();render();toast("Profil mis à jour");
+  }
+});
+layer.addEventListener("click",e=>{if(e.target.matches("[data-close]")&&!PL){stopDemo();layer.innerHTML=""}});
+document.addEventListener("visibilitychange",()=>{if(PL&&document.visibilityState==="visible")lockWake()});
+if(document.querySelector('link[rel="manifest"]')&&"serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+render();
+</script>
+
+</body></html>
